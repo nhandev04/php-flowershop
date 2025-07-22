@@ -12,7 +12,8 @@ class BannerController extends Controller
      */
     public function index()
     {
-        //
+        $banners = \App\Models\Banner::orderBy('sort_order')->paginate(10);
+        return view('admin.banners.index', compact('banners'));
     }
 
     /**
@@ -20,7 +21,7 @@ class BannerController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.banners.create');
     }
 
     /**

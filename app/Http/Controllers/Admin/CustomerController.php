@@ -4,15 +4,30 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Customer;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Customer::query();
+
+        // Apply search filter
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+            });
+        }
+
+        $customers = $query->latest()->paginate(10);
+
+        return view('admin.customers.index', compact('customers'));
     }
 
     /**
@@ -20,7 +35,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.customers.create');
     }
 
     /**
@@ -28,7 +43,17 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255|unique:customers',
+            'address' => 'required|string',
+        ]);
+
+        Customer::create($validated);
+
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Customer created successfully.');
     }
 
     /**
@@ -36,7 +61,8 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $customer = Customer::with('orders')->findOrFail($id);
+        return view('admin.customers.show', compact('customer'));
     }
 
     /**
@@ -44,7 +70,8 @@ class CustomerController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return view('admin.customers.edit', compact('customer'));
     }
 
     /**
@@ -52,7 +79,19 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255|unique:customers,email,' . $id,
+            'address' => 'required|string',
+        ]);
+
+        $customer->update($validated);
+
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Customer updated successfully.');
     }
 
     /**
@@ -60,6 +99,17 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        // Check if customer has orders
+        if ($customer->orders()->count() > 0) {
+            return redirect()->route('admin.customers.index')
+                ->with('error', 'Cannot delete customer because they have associated orders.');
+        }
+
+        $customer->delete();
+
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Customer deleted successfully.');
     }
 }

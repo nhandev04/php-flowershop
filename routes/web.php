@@ -73,16 +73,32 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Admin Routes (Protected by auth middleware)
+// Admin Routes (Protected by auth middleware only for testing)
 Route::prefix('ad')->middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Categories
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->names([
+        'index' => 'admin.categories.index',
+        'create' => 'admin.categories.create',
+        'store' => 'admin.categories.store',
+        'show' => 'admin.categories.show',
+        'edit' => 'admin.categories.edit',
+        'update' => 'admin.categories.update',
+        'destroy' => 'admin.categories.destroy',
+    ]);
 
     // Brands
-    Route::resource('brands', BrandController::class);
+    Route::resource('brands', BrandController::class)->names([
+        'index' => 'admin.brands.index',
+        'create' => 'admin.brands.create',
+        'store' => 'admin.brands.store',
+        'show' => 'admin.brands.show',
+        'edit' => 'admin.brands.edit',
+        'update' => 'admin.brands.update',
+        'destroy' => 'admin.brands.destroy',
+    ]);
 
     // Products
     Route::resource('products', ProductController::class)->names([
@@ -95,18 +111,58 @@ Route::prefix('ad')->middleware(['auth'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
-    // Users (Protected by admin middleware)
-    Route::resource('users', UserController::class)->middleware('admin');
+    // Users
+    Route::resource('users', UserController::class)->names([
+        'index' => 'admin.users.index',
+        'create' => 'admin.users.create',
+        'store' => 'admin.users.store',
+        'show' => 'admin.users.show',
+        'edit' => 'admin.users.edit',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy',
+    ]);
 
     // Customers
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->names([
+        'index' => 'admin.customers.index',
+        'create' => 'admin.customers.create',
+        'store' => 'admin.customers.store',
+        'show' => 'admin.customers.show',
+        'edit' => 'admin.customers.edit',
+        'update' => 'admin.customers.update',
+        'destroy' => 'admin.customers.destroy',
+    ]);
 
     // Orders
-    Route::resource('orders', AdminOrderController::class);
+    Route::resource('orders', AdminOrderController::class)->names([
+        'index' => 'admin.orders.index',
+        'create' => 'admin.orders.create',
+        'store' => 'admin.orders.store',
+        'show' => 'admin.orders.show',
+        'edit' => 'admin.orders.edit',
+        'update' => 'admin.orders.update',
+        'destroy' => 'admin.orders.destroy',
+    ]);
 
     // Order Items
-    Route::resource('order-items', OrderItemController::class);
+    Route::resource('order-items', OrderItemController::class)->names([
+        'index' => 'admin.order-items.index',
+        'create' => 'admin.order-items.create',
+        'store' => 'admin.order-items.store',
+        'show' => 'admin.order-items.show',
+        'edit' => 'admin.order-items.edit',
+        'update' => 'admin.order-items.update',
+        'destroy' => 'admin.order-items.destroy',
+    ]);
 
     // Banners
-    Route::resource('banners', BannerController::class);
+    Route::resource('banners', BannerController::class)->names([
+        'index' => 'admin.banners.index',
+        'create' => 'admin.banners.create',
+        'store' => 'admin.banners.store',
+        'show' => 'admin.banners.show',
+        'edit' => 'admin.banners.edit',
+        'update' => 'admin.banners.update',
+        'destroy' => 'admin.banners.destroy',
+    ]);
 });

@@ -23,29 +23,33 @@
                     <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
-                    href="{{ route('categories.index') }}">
+                    href="{{ route('admin.categories.index') }}">
                     <i class="fas fa-list mr-2"></i> Categories
                 </a>
-                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded" href="{{ route('brands.index') }}">
+                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
+                    href="{{ route('admin.brands.index') }}">
                     <i class="fas fa-copyright mr-2"></i> Brands
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
                     href="{{ route('admin.products.index') }}">
                     <i class="fas fa-box mr-2"></i> Products
                 </a>
-                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded" href="{{ route('orders.index') }}">
+                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
+                    href="{{ route('admin.orders.index') }}">
                     <i class="fas fa-shopping-cart mr-2"></i> Orders
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
-                    href="{{ route('customers.index') }}">
+                    href="{{ route('admin.customers.index') }}">
                     <i class="fas fa-users mr-2"></i> Customers
                 </a>
                 @if(auth()->user()->role === 'admin')
-                    <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded" href="{{ route('users.index') }}">
+                    <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
+                        href="{{ route('admin.users.index') }}">
                         <i class="fas fa-user-shield mr-2"></i> Users
                     </a>
                 @endif
-                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded" href="{{ route('banners.index') }}">
+                <a class="block px-4 py-2 mt-2 text-sm hover:bg-indigo-700 rounded"
+                    href="{{ route('admin.banners.index') }}">
                     <i class="fas fa-images mr-2"></i> Banners
                 </a>
             </nav>

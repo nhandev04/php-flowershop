@@ -19,6 +19,17 @@ class Product extends Model
         'is_active',
         'is_featured',
     ];
+    
+    /**
+     * Get the image path attribute.
+     */
+    protected function getImageAttribute($value)
+    {
+        if ($value && !str_starts_with($value, 'products/') && file_exists(storage_path('app/public/products/' . $value))) {
+            return 'products/' . $value;
+        }
+        return $value;
+    }
 
     /**
      * Get the category that owns the product
