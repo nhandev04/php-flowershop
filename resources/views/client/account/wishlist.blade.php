@@ -1,0 +1,129 @@
+@extends('layouts.client')
+
+@section('title', ' - My Wishlist')
+
+@section('content')
+    <div class="bg-gray-100 py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold mb-2">My Wishlist</h1>
+            <nav class="text-sm text-gray-500">
+                <ol class="list-none p-0 flex flex-wrap">
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li class="mx-2">/</li>
+                    <li><a href="{{ route('account.dashboard') }}" class="hover:text-pink-600">My Account</a></li>
+                    <li class="mx-2">/</li>
+                    <li class="text-pink-600">Wishlist</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Account Sidebar -->
+            @include('client.account.partials.sidebar')
+
+            <!-- Main Content -->
+            <div class="lg:w-3/4">
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6"
+                        role="alert">
+                        <strong class="font-bold">Success!</strong>
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                @if(session('info'))
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-6" role="alert">
+                        <strong class="font-bold">Info:</strong>
+                        <span class="block sm:inline">{{ session('info') }}</span>
+                    </div>
+                @endif
+
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-gray-800">Wishlist Items</h2>
+                    </div>
+
+                    @if($wishlistItems->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                            @foreach($wishlistItems as $item)
+                                <div
+                                    class="border border-gray-200 rounded-lg overflow-hidden group hover:shadow-lg transition-shadow duration-300">
+                                    <div class="relative">
+                                        @if($item->product && $item->product->image)
+                                            <a href="{{ route('products.show', $item->product) }}">
+                                                <img src="{{ asset('storage/' . $item->product->image) }}"
+                                                    alt="{{ $item->product->name }}" class="w-full h-48 object-cover">
+                                            </a>
+                                        @else
+                                            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                                <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                            </div>
+                                        @endif
+
+                                        <form action="{{ route('wishlist.remove', $item) }}" method="POST"
+                                            class="absolute top-2 right-2">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors duration-300"
+                                                title="Remove from wishlist">
+                                                <i class="fas fa-trash-alt text-red-500"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div class="p-4">
+                                        @if($item->product)
+                                            <a href="{{ route('products.show', $item->product) }}" class="block">
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $item->product->name }}</h3>
+                                            </a>
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span
+                                                    class="text-lg font-bold text-pink-600">${{ number_format($item->product->price, 2) }}</span>
+                                                <div>
+                                                    @if($item->product->stock_status === 'in_stock')
+                                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">In
+                                                            Stock</span>
+                                                    @else
+                                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Out of
+                                                            Stock</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <form action="{{ route('cart.add') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $item->product->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit"
+                                                    class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md transition duration-300 {{ $item->product->stock_status !== 'in_stock' ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                    {{ $item->product->stock_status !== 'in_stock' ? 'disabled' : '' }}>
+                                                    Add to Cart
+                                                </button>
+                                            </form>
+                                        @else
+                                            <p class="text-gray-500">Product no longer available</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-8 text-center">
+                            <div class="text-gray-400 mb-4">
+                                <i class="fas fa-heart text-6xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-700 mb-2">Your Wishlist is Empty</h3>
+                            <p class="text-gray-500 mb-6">You don't have any products in your wishlist yet.</p>
+                            <a href="{{ route('products.index') }}"
+                                class="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
+                                Start Shopping
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

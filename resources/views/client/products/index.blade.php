@@ -1,0 +1,270 @@
+@extends('layouts.client')
+
+@section('title', ' - Shop All Flowers')
+
+@section('content')
+    <div class="bg-gray-100 py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold mb-2">{{ $title ?? 'All Flowers' }}</h1>
+            <nav class="text-sm text-gray-500">
+                <ol class="list-none p-0 flex flex-wrap">
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li class="mx-2">/</li>
+                    @if(isset($category))
+                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Products</a></li>
+                        <li class="mx-2">/</li>
+                        <li class="text-pink-600">{{ $category->name }}</li>
+                    @elseif(isset($brand))
+                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Products</a></li>
+                        <li class="mx-2">/</li>
+                        <li class="text-pink-600">{{ $brand->name }}</li>
+                    @else
+                        <li class="text-pink-600">Products</li>
+                    @endif
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                <strong class="font-bold">Error:</strong>
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+        @endif
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar -->
+            <div class="lg:w-1/4">
+                <!-- Categories -->
+                <div class="bg-white p-5 rounded-lg shadow mb-6">
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Categories</h3>
+                    <ul class="space-y-2">
+                        @foreach($categories as $cat)
+                            <li>
+                                <a href="{{ route('products.category', $cat) }}"
+                                    class="flex items-center justify-between hover:text-pink-600 {{ isset($category) && $category->id === $cat->id ? 'text-pink-600 font-semibold' : '' }}">
+                                    <span>{{ $cat->name }}</span>
+                                    <span
+                                        class="bg-gray-100 text-gray-700 text-xs rounded-full px-2 py-1">{{ $cat->products_count }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Brands -->
+                <div class="bg-white p-5 rounded-lg shadow mb-6">
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Brands</h3>
+                    <ul class="space-y-2">
+                        @foreach($brands as $b)
+                            <li>
+                                <a href="{{ route('products.brand', $b) }}"
+                                    class="flex items-center justify-between hover:text-pink-600 {{ isset($brand) && $brand->id === $b->id ? 'text-pink-600 font-semibold' : '' }}">
+                                    <span>{{ $b->name }}</span>
+                                    <span
+                                        class="bg-gray-100 text-gray-700 text-xs rounded-full px-2 py-1">{{ $b->products_count }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="bg-white p-5 rounded-lg shadow mb-6">
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Price Range</h3>
+                    <form action="{{ route('products.index') }}" method="GET">
+                        @if(request()->has('category_id'))
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                        @endif
+                        @if(request()->has('brand_id'))
+                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                        @endif
+                        @if(request()->has('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                        <div class="mb-3">
+                            <label for="min_price" class="block text-sm text-gray-600 mb-1">Min Price:</label>
+                            <input type="number" name="min_price" id="min_price" min="0"
+                                value="{{ request('min_price', '') }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
+                                placeholder="Min Price">
+                        </div>
+                        <div class="mb-3">
+                            <label for="max_price" class="block text-sm text-gray-600 mb-1">Max Price:</label>
+                            <input type="number" name="max_price" id="max_price" min="0"
+                                value="{{ request('max_price', '') }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
+                                placeholder="Max Price">
+                        </div>
+                        <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded w-full">
+                            Apply Filter
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="lg:w-3/4">
+                <!-- Search and Sort -->
+                <div class="bg-white p-4 rounded-lg shadow mb-6 flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0 w-full md:w-1/2">
+                        <form action="{{ route('products.index') }}" method="GET" class="flex">
+                            @if(request()->has('category_id'))
+                                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            @endif
+                            @if(request()->has('brand_id'))
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                            @endif
+                            @if(request()->has('min_price'))
+                                <input type="hidden" name="min_price" value="{{ request('min_price') }}">
+                            @endif
+                            @if(request()->has('max_price'))
+                                <input type="hidden" name="max_price" value="{{ request('max_price') }}">
+                            @endif
+                            <input type="text" name="search" value="{{ request('search', '') }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-pink-500"
+                                placeholder="Search products...">
+                            <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-r">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <form action="{{ route('products.index') }}" method="GET" class="flex items-center" id="sort-form">
+                            @if(request()->has('category_id'))
+                                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            @endif
+                            @if(request()->has('brand_id'))
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                            @endif
+                            @if(request()->has('min_price'))
+                                <input type="hidden" name="min_price" value="{{ request('min_price') }}">
+                            @endif
+                            @if(request()->has('max_price'))
+                                <input type="hidden" name="max_price" value="{{ request('max_price') }}">
+                            @endif
+                            @if(request()->has('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+                            <label for="sort" class="text-sm text-gray-600 mr-2">Sort by:</label>
+                            <select name="sort" id="sort"
+                                class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
+                                onchange="document.getElementById('sort-form').submit()">
+                                <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Latest</option>
+                                <option value="price_low_high" {{ request('sort') === 'price_low_high' ? 'selected' : '' }}>
+                                    Price: Low to High</option>
+                                <option value="price_high_low" {{ request('sort') === 'price_high_low' ? 'selected' : '' }}>
+                                    Price: High to Low</option>
+                                <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>Name: A to Z
+                                </option>
+                                <option value="name_desc" {{ request('sort') === 'name_desc' ? 'selected' : '' }}>Name: Z to A
+                                </option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                @if($products->count() > 0)
+                    <!-- Products -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($products as $product)
+                            <div
+                                class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 border border-gray-200">
+                                <a href="{{ route('products.show', $product) }}">
+                                    <div class="h-56 overflow-hidden">
+                                        @if($product->image)
+                                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                                class="w-full h-full object-cover hover:scale-110 transition duration-300">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                                <i class="fas fa-image text-4xl text-gray-400"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </a>
+                                <div class="p-4">
+                                    <a href="{{ route('products.show', $product) }}" class="block mb-2">
+                                        <h3 class="text-lg font-semibold hover:text-pink-600 transition duration-300">
+                                            {{ $product->name }}</h3>
+                                    </a>
+                                    <div class="text-sm text-gray-500 mb-2">
+                                        @if($product->category)
+                                            <a href="{{ route('products.category', $product->category) }}"
+                                                class="hover:text-pink-600">{{ $product->category->name }}</a>
+                                        @endif
+                                        @if($product->brand)
+                                            | <a href="{{ route('products.brand', $product->brand) }}"
+                                                class="hover:text-pink-600">{{ $product->brand->name }}</a>
+                                        @endif
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-lg font-bold text-pink-600">${{ number_format($product->price, 2) }}</span>
+                                        <div class="flex gap-2">
+                                            <form action="{{ route('cart.add') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit"
+                                                    class="bg-pink-600 hover:bg-pink-700 text-white rounded-full w-10 h-10 flex items-center justify-center transition duration-300">
+                                                    <i class="fas fa-shopping-basket"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            @auth
+                                                @php
+                                                    $inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())
+                                                        ->where('product_id', $product->id)
+                                                        ->exists();
+                                                @endphp
+                                                
+                                                @if($inWishlist)
+                                                    <form action="{{ route('wishlist.remove', \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->first()) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-pink-600 rounded-full w-10 h-10 flex items-center justify-center transition duration-300">
+                                                            <i class="fas fa-heart"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <form action="{{ route('wishlist.add', $product) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-pink-600 rounded-full w-10 h-10 flex items-center justify-center transition duration-300">
+                                                            <i class="far fa-heart"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @else
+                                                <a href="{{ route('login') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-pink-600 rounded-full w-10 h-10 flex items-center justify-center transition duration-300">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                            @endauth
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-8">
+                        {{ $products->withQueryString()->links() }}
+                    </div>
+                @else
+                    <div class="bg-white p-8 rounded-lg shadow text-center">
+                        <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">No Products Found</h3>
+                        <p class="text-gray-500">We couldn't find any products matching your criteria. Try adjusting your
+                            filters or search term.</p>
+                        <a href="{{ route('products.index') }}"
+                            class="mt-4 inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
+                            View All Products
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+@endsection
