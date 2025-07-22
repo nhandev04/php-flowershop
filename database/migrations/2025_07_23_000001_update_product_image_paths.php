@@ -14,10 +14,10 @@ return new class extends Migration {
     {
         // First check if any products don't have the correct image path format
         $products = DB::table('products')->whereNotNull('image')->get();
-        
+
         foreach ($products as $product) {
             $image = $product->image;
-            
+
             // If image path doesn't start with "products/" add it
             if ($image && !str_starts_with($image, 'products/')) {
                 DB::table('products')

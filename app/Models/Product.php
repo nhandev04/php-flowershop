@@ -19,7 +19,7 @@ class Product extends Model
         'is_active',
         'is_featured',
     ];
-    
+
     /**
      * Get the image path attribute.
      */
