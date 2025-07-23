@@ -7,9 +7,9 @@
         <div class="container mx-auto px-4">
             <nav class="text-sm text-gray-500">
                 <ol class="list-none p-0 flex flex-wrap">
-                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
                     <li class="mx-2">/</li>
-                    <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Products</a></li>
+                    <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Sản phẩm</a></li>
                     @if($product->category)
                         <li class="mx-2">/</li>
                         <li><a href="{{ route('products.category', $product->category) }}"
@@ -44,12 +44,12 @@
                     <h1 class="text-3xl font-bold mb-2">{{ $product->name }}</h1>
 
                     <div class="flex items-center mb-4">
-                        <span class="text-2xl font-bold text-pink-600">${{ number_format($product->price, 2) }}</span>
+                        <span class="text-2xl font-bold text-pink-600">{{ number_format($product->price, 0) }}₫</span>
                         @if($product->compare_price > $product->price)
                             <span
-                                class="ml-2 text-lg text-gray-500 line-through">${{ number_format($product->compare_price, 2) }}</span>
+                                class="ml-2 text-lg text-gray-500 line-through">{{ number_format($product->compare_price, 0) }}₫</span>
                             <span class="ml-2 bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
-                                {{ round((($product->compare_price - $product->price) / $product->compare_price) * 100) }}% OFF
+                                {{ round((($product->compare_price - $product->price) / $product->compare_price) * 100) }}% GIẢM
                             </span>
                         @endif
                     </div>
@@ -57,11 +57,11 @@
                     <div class="mb-6">
                         @if($product->stock_status === 'in_stock')
                             <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
-                                <i class="fas fa-check-circle mr-1"></i> In Stock
+                                <i class="fas fa-check-circle mr-1"></i> Còn hàng
                             </span>
                         @else
                             <span class="inline-block bg-red-100 text-red-800 text-sm font-semibold px-3 py-1 rounded-full">
-                                <i class="fas fa-times-circle mr-1"></i> Out of Stock
+                                <i class="fas fa-times-circle mr-1"></i> Hết hàng
                             </span>
                         @endif
                     </div>
@@ -73,7 +73,7 @@
                     <div class="mb-6 text-sm text-gray-600">
                         @if($product->category)
                             <p class="mb-1">
-                                <span class="font-semibold">Category:</span>
+                                <span class="font-semibold">Danh mục:</span>
                                 <a href="{{ route('products.category', $product->category) }}"
                                     class="text-pink-600 hover:underline">
                                     {{ $product->category->name }}
@@ -83,7 +83,7 @@
 
                         @if($product->brand)
                             <p class="mb-1">
-                                <span class="font-semibold">Brand:</span>
+                                <span class="font-semibold">Thương hiệu:</span>
                                 <a href="{{ route('products.brand', $product->brand) }}" class="text-pink-600 hover:underline">
                                     {{ $product->brand->name }}
                                 </a>
@@ -91,7 +91,7 @@
                         @endif
 
                         @if($product->sku)
-                            <p class="mb-1"><span class="font-semibold">SKU:</span> {{ $product->sku }}</p>
+                            <p class="mb-1"><span class="font-semibold">Mã sản phẩm:</span> {{ $product->sku }}</p>
                         @endif
                     </div>
 
@@ -118,14 +118,14 @@
                                 <button type="submit"
                                     class="bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300 w-full md:w-auto flex items-center justify-center">
                                     <i class="fas fa-shopping-cart mr-2"></i>
-                                    Add to Cart
+                                    Thêm vào giỏ hàng
                                 </button>
                             </form>
                         @else
                             <button disabled
                                 class="bg-gray-300 text-gray-500 py-2 px-6 rounded-md w-full md:w-auto flex items-center justify-center cursor-not-allowed">
                                 <i class="fas fa-shopping-cart mr-2"></i>
-                                Out of Stock
+                                Hết hàng
                             </button>
                         @endif
 
@@ -142,25 +142,25 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="flex items-center text-pink-600 hover:text-pink-700">
-                                            <i class="fas fa-heart mr-1"></i> Remove from Wishlist
+                                            <i class="fas fa-heart mr-1"></i> Xóa khỏi danh sách yêu thích
                                         </button>
                                     </form>
                                 @else
                                     <form action="{{ route('wishlist.add', $product) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="flex items-center text-gray-600 hover:text-pink-600">
-                                            <i class="far fa-heart mr-1"></i> Add to Wishlist
+                                            <i class="far fa-heart mr-1"></i> Thêm vào danh sách yêu thích
                                         </button>
                                     </form>
                                 @endif
                             @else
                                 <a href="{{ route('login') }}" class="flex items-center text-gray-600 hover:text-pink-600">
-                                    <i class="far fa-heart mr-1"></i> Add to Wishlist
+                                    <i class="far fa-heart mr-1"></i> Thêm vào danh sách yêu thích
                                 </a>
                             @endauth
                             <span class="text-gray-300 mx-2">|</span>
                             <a href="#" class="flex items-center text-gray-600 hover:text-pink-600">
-                                <i class="fas fa-share-alt mr-1"></i> Share
+                                <i class="fas fa-share-alt mr-1"></i> Chia sẻ
                             </a>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
             <!-- Additional Information -->
             <div class="p-6 border-t border-gray-200">
                 <div class="mb-6">
-                    <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Product Details</h2>
+                    <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Chi tiết sản phẩm</h2>
                     <div class="prose max-w-none text-gray-700">
                         {{ $product->description }}
                     </div>
@@ -178,7 +178,7 @@
 
                 @if($product->specifications)
                     <div class="mb-6">
-                        <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Specifications</h2>
+                        <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Thông số kỹ thuật</h2>
                         <div class="prose max-w-none text-gray-700">
                             {!! $product->specifications !!}
                         </div>
@@ -190,7 +190,7 @@
         <!-- Related Products -->
         @if($relatedProducts->count() > 0)
             <div class="mt-12">
-                <h2 class="text-2xl font-bold mb-6">Related Products</h2>
+                <h2 class="text-2xl font-bold mb-6">Sản phẩm liên quan</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($relatedProducts as $relatedProduct)
                         <div
@@ -214,7 +214,7 @@
                                 </a>
                                 <div class="flex justify-between items-center">
                                     <span
-                                        class="text-lg font-bold text-pink-600">${{ number_format($relatedProduct->price, 2) }}</span>
+                                        class="text-lg font-bold text-pink-600">{{ number_format($relatedProduct->price, 0) }}₫</span>
                                     <div class="flex gap-2">
                                         <form action="{{ route('cart.add') }}" method="POST">
                                             @csrf

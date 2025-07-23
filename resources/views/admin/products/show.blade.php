@@ -1,30 +1,30 @@
 @extends('layouts.admin')
 
-@section('title', ' - Product Details')
+@section('title', ' - Chi tiết sản phẩm')
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4">Product Details</h1>
+        <h1 class="mt-4">Chi tiết sản phẩm</h1>
         <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-            <li class="breadcrumb-item active">Product Details: {{ $product->name }}</li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Bảng điều khiển</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản phẩm</a></li>
+            <li class="breadcrumb-item active">Chi tiết: {{ $product->name }}</li>
         </ol>
 
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <i class="fas fa-info-circle me-1"></i>
-                Product Information
+                Thông tin sản phẩm
                 <div class="float-end">
                     <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-light">
-                        <i class="fas fa-edit me-1"></i> Edit
+                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
                     </a>
                     <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline"
-                        onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash me-1"></i> Delete
+                            <i class="fas fa-trash me-1"></i> Xóa
                         </button>
                     </form>
                 </div>
@@ -38,7 +38,7 @@
                         @else
                             <div class="border p-5 text-center text-muted">
                                 <i class="fas fa-image fa-5x mb-3"></i>
-                                <p>No image available</p>
+                                <p>Không có hình ảnh</p>
                             </div>
                         @endif
                     </div>
@@ -46,11 +46,11 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <th style="width: 200px;">Product ID</th>
+                                    <th style="width: 200px;">Mã sản phẩm</th>
                                     <td>{{ $product->id }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Name</th>
+                                    <th>Tên sản phẩm</th>
                                     <td>{{ $product->name }}</td>
                                 </tr>
                                 <tr>
@@ -58,52 +58,53 @@
                                     <td>{{ $product->slug }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Category</th>
-                                    <td>{{ $product->category ? $product->category->name : 'N/A' }}</td>
+                                    <th>Danh mục</th>
+                                    <td>{{ $product->category ? $product->category->name : 'Không có' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Brand</th>
-                                    <td>{{ $product->brand ? $product->brand->name : 'N/A' }}</td>
+                                    <th>Thương hiệu</th>
+                                    <td>{{ $product->brand ? $product->brand->name : 'Không có' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Price</th>
-                                    <td>${{ number_format($product->price, 2) }}</td>
+                                    <th>Giá</th>
+                                    <td>{{ number_format($product->price, 0, ',', '.') }}₫</td>
                                 </tr>
                                 <tr>
-                                    <th>Sale Price</th>
-                                    <td>{{ $product->sale_price ? '$' . number_format($product->sale_price, 2) : 'N/A' }}
+                                    <th>Giá khuyến mãi</th>
+                                    <td>
+                                        {{ $product->sale_price ? number_format($product->sale_price, 0, ',', '.') . '₫' : 'Không có' }}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Stock</th>
+                                    <th>Tồn kho</th>
                                     <td>
                                         {{ $product->stock }}
                                         @if($product->stock <= 5)
-                                            <span class="badge bg-danger">Low Stock</span>
+                                            <span class="badge bg-danger">Sắp hết hàng</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status</th>
+                                    <th>Trạng thái</th>
                                     <td>
                                         @if($product->is_active)
-                                            <span class="badge bg-success">Active</span>
+                                            <span class="badge bg-success">Đang bán</span>
                                         @else
-                                            <span class="badge bg-danger">Inactive</span>
+                                            <span class="badge bg-danger">Ngừng bán</span>
                                         @endif
 
                                         @if($product->is_featured)
-                                            <span class="badge bg-info">Featured</span>
+                                            <span class="badge bg-info">Nổi bật</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Created At</th>
-                                    <td>{{ $product->created_at->format('F j, Y, g:i a') }}</td>
+                                    <th>Ngày tạo</th>
+                                    <td>{{ $product->created_at->format('d/m/Y H:i') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Last Updated</th>
-                                    <td>{{ $product->updated_at->format('F j, Y, g:i a') }}</td>
+                                    <th>Ngày cập nhật</th>
+                                    <td>{{ $product->updated_at->format('d/m/Y H:i') }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -111,7 +112,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <h5>Product Description</h5>
+                    <h5>Mô tả sản phẩm</h5>
                     <div class="p-3 border rounded">
                         {{ $product->description }}
                     </div>

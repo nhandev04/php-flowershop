@@ -1,25 +1,28 @@
 @extends('layouts.client')
 
-@section('title', ' - Shop All Flowers')
+@section('title', ' - Tất cả hoa')
 
 @section('content')
     <div class="bg-gray-100 py-6">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold mb-2">{{ $title ?? 'All Flowers' }}</h1>
+            <h1 class="text-3xl font-                                        <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-lg font-bold text-pink-600">{{ number_format($product->price, 0) }}₫</span>
+                                        <div class="flex gap-2"> mb-2">{{ $title ?? 'Tất cả hoa' }}</h1>
             <nav class="text-sm text-gray-500">
                 <ol class="list-none p-0 flex flex-wrap">
-                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
                     <li class="mx-2">/</li>
                     @if(isset($category))
-                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Products</a></li>
+                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Sản phẩm</a></li>
                         <li class="mx-2">/</li>
                         <li class="text-pink-600">{{ $category->name }}</li>
                     @elseif(isset($brand))
-                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Products</a></li>
+                        <li><a href="{{ route('products.index') }}" class="hover:text-pink-600">Sản phẩm</a></li>
                         <li class="mx-2">/</li>
                         <li class="text-pink-600">{{ $brand->name }}</li>
                     @else
-                        <li class="text-pink-600">Products</li>
+                        <li class="text-pink-600">Sản phẩm</li>
                     @endif
                 </ol>
             </nav>
@@ -29,7 +32,7 @@
     <div class="container mx-auto px-4 py-8">
         @if(session('error'))
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-                <strong class="font-bold">Error:</strong>
+                <strong class="font-bold">Lỗi:</strong>
                 <span class="block sm:inline">{{ session('error') }}</span>
             </div>
         @endif
@@ -39,7 +42,7 @@
             <div class="lg:w-1/4">
                 <!-- Categories -->
                 <div class="bg-white p-5 rounded-lg shadow mb-6">
-                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Categories</h3>
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Danh mục</h3>
                     <ul class="space-y-2">
                         @foreach($categories as $cat)
                             <li>
@@ -56,7 +59,7 @@
 
                 <!-- Brands -->
                 <div class="bg-white p-5 rounded-lg shadow mb-6">
-                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Brands</h3>
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Thương hiệu</h3>
                     <ul class="space-y-2">
                         @foreach($brands as $b)
                             <li>
@@ -73,7 +76,7 @@
 
                 <!-- Price Filter -->
                 <div class="bg-white p-5 rounded-lg shadow mb-6">
-                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Price Range</h3>
+                    <h3 class="font-bold text-xl mb-4 border-b border-gray-200 pb-2">Khoảng giá</h3>
                     <form action="{{ route('products.index') }}" method="GET">
                         @if(request()->has('category_id'))
                             <input type="hidden" name="category_id" value="{{ request('category_id') }}">
@@ -85,21 +88,21 @@
                             <input type="hidden" name="search" value="{{ request('search') }}">
                         @endif
                         <div class="mb-3">
-                            <label for="min_price" class="block text-sm text-gray-600 mb-1">Min Price:</label>
+                            <label for="min_price" class="block text-sm text-gray-600 mb-1">Giá tối thiểu:</label>
                             <input type="number" name="min_price" id="min_price" min="0"
                                 value="{{ request('min_price', '') }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
-                                placeholder="Min Price">
+                                placeholder="Giá tối thiểu">
                         </div>
                         <div class="mb-3">
-                            <label for="max_price" class="block text-sm text-gray-600 mb-1">Max Price:</label>
+                            <label for="max_price" class="block text-sm text-gray-600 mb-1">Giá tối đa:</label>
                             <input type="number" name="max_price" id="max_price" min="0"
                                 value="{{ request('max_price', '') }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
-                                placeholder="Max Price">
+                                placeholder="Giá tối đa">
                         </div>
                         <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded w-full">
-                            Apply Filter
+                            Áp dụng lọc
                         </button>
                     </form>
                 </div>
@@ -125,7 +128,7 @@
                             @endif
                             <input type="text" name="search" value="{{ request('search', '') }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-pink-500"
-                                placeholder="Search products...">
+                                placeholder="Tìm kiếm sản phẩm...">
                             <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-r">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -148,18 +151,18 @@
                             @if(request()->has('search'))
                                 <input type="hidden" name="search" value="{{ request('search') }}">
                             @endif
-                            <label for="sort" class="text-sm text-gray-600 mr-2">Sort by:</label>
+                            <label for="sort" class="text-sm text-gray-600 mr-2">Sắp xếp theo:</label>
                             <select name="sort" id="sort"
                                 class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-pink-500"
                                 onchange="document.getElementById('sort-form').submit()">
-                                <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Latest</option>
+                                <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Mới nhất</option>
                                 <option value="price_low_high" {{ request('sort') === 'price_low_high' ? 'selected' : '' }}>
-                                    Price: Low to High</option>
+                                    Giá: Thấp đến cao</option>
                                 <option value="price_high_low" {{ request('sort') === 'price_high_low' ? 'selected' : '' }}>
-                                    Price: High to Low</option>
-                                <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>Name: A to Z
+                                    Giá: Cao đến thấp</option>
+                                <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>Tên: A đến Z
                                 </option>
-                                <option value="name_desc" {{ request('sort') === 'name_desc' ? 'selected' : '' }}>Name: Z to A
+                                <option value="name_desc" {{ request('sort') === 'name_desc' ? 'selected' : '' }}>Tên: Z đến A
                                 </option>
                             </select>
                         </form>
@@ -255,12 +258,11 @@
                 @else
                     <div class="bg-white p-8 rounded-lg shadow text-center">
                         <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
-                        <h3 class="text-2xl font-bold text-gray-700 mb-2">No Products Found</h3>
-                        <p class="text-gray-500">We couldn't find any products matching your criteria. Try adjusting your
-                            filters or search term.</p>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Không tìm thấy sản phẩm</h3>
+                        <p class="text-gray-500">Chúng tôi không thể tìm thấy sản phẩm nào phù hợp với tiêu chí của bạn. Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.</p>
                         <a href="{{ route('products.index') }}"
                             class="mt-4 inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
-                            View All Products
+                            Xem tất cả sản phẩm
                         </a>
                     </div>
                 @endif

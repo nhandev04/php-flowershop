@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 
-@section('title', ' - View Brand')
+@section('title', ' - Xem thương hiệu')
 
 @section('content')
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Brand Details</h1>
+            <h1 class="text-3xl font-bold">Chi tiết thương hiệu</h1>
             <div>
                 <a href="{{ route('admin.brands.edit', $brand->id) }}"
                     class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded mr-2">
-                    <i class="fas fa-edit mr-2"></i> Edit
+                    <i class="fas fa-edit mr-2"></i> Chỉnh sửa
                 </a>
                 <a href="{{ route('admin.brands.index') }}"
                     class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                    <i class="fas fa-arrow-left mr-2"></i> Back
+                    <i class="fas fa-arrow-left mr-2"></i> Quay lại
                 </a>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <h3 class="text-xl font-bold mb-4">Basic Information</h3>
+                        <h3 class="text-xl font-bold mb-4">Thông tin cơ bản</h3>
 
                         <div class="mb-4">
                             <p class="text-gray-600 text-sm">ID</p>
@@ -30,13 +30,13 @@
                         </div>
 
                         <div class="mb-4">
-                            <p class="text-gray-600 text-sm">Name</p>
+                            <p class="text-gray-600 text-sm">Tên thương hiệu</p>
                             <p class="font-medium">{{ $brand->name }}</p>
                         </div>
 
                         <div class="mb-4">
-                            <p class="text-gray-600 text-sm">Description</p>
-                            <p class="font-medium">{{ $brand->description ?: 'Not specified' }}</p>
+                            <p class="text-gray-600 text-sm">Mô tả</p>
+                            <p class="font-medium">{{ $brand->description ?: 'Chưa có thông tin' }}</p>
                         </div>
 
                         <div class="mb-4">
@@ -48,32 +48,32 @@
                                     </a>
                                 </p>
                             @else
-                                <p class="text-gray-500">Not specified</p>
+                                <p class="text-gray-500">Chưa có thông tin</p>
                             @endif
                         </div>
 
                         <div class="mb-4">
-                            <p class="text-gray-600 text-sm">Status</p>
+                            <p class="text-gray-600 text-sm">Trạng thái</p>
                             @if($brand->is_active)
-                                <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Active</span>
+                                <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Hoạt động</span>
                             @else
-                                <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Inactive</span>
+                                <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Không hoạt động</span>
                             @endif
                         </div>
 
                         <div class="mb-4">
-                            <p class="text-gray-600 text-sm">Created At</p>
+                            <p class="text-gray-600 text-sm">Ngày tạo</p>
                             <p class="font-medium">{{ $brand->created_at->format('F j, Y, g:i a') }}</p>
                         </div>
 
                         <div class="mb-4">
-                            <p class="text-gray-600 text-sm">Last Updated</p>
+                            <p class="text-gray-600 text-sm">Cập nhật lần cuối</p>
                             <p class="font-medium">{{ $brand->updated_at->format('F j, Y, g:i a') }}</p>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-bold mb-4">Logo</h3>
+                        <h3 class="text-xl font-bold mb-4">Hình logo</h3>
 
                         @if($brand->logo)
                             <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
@@ -82,13 +82,13 @@
                             <div class="h-48 w-full rounded-lg bg-gray-200 flex items-center justify-center">
                                 <i class="fas fa-image text-gray-400 text-4xl"></i>
                             </div>
-                            <p class="text-gray-500 mt-2">No logo available</p>
+                            <p class="text-gray-500 mt-2">Chưa có hình logo</p>
                         @endif
                     </div>
                 </div>
 
                 <div class="mt-8">
-                    <h3 class="text-xl font-bold mb-4">Products from this Brand</h3>
+                    <h3 class="text-xl font-bold mb-4">Sản phẩm từ thương hiệu này</h3>
 
                     @if($brand->products->count() > 0)
                         <div class="overflow-x-auto">
@@ -96,11 +96,11 @@
                                 <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                                     <tr>
                                         <th class="py-3 px-6 text-left">ID</th>
-                                        <th class="py-3 px-6 text-left">Image</th>
-                                        <th class="py-3 px-6 text-left">Name</th>
-                                        <th class="py-3 px-6 text-left">Price</th>
-                                        <th class="py-3 px-6 text-center">Status</th>
-                                        <th class="py-3 px-6 text-center">Actions</th>
+                                        <th class="py-3 px-6 text-left">Hình ảnh</th>
+                                        <th class="py-3 px-6 text-left">Tên sản phẩm</th>
+                                        <th class="py-3 px-6 text-left">Giá</th>
+                                        <th class="py-3 px-6 text-center">Trạng thái</th>
+                                        <th class="py-3 px-6 text-center">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-600 text-sm">
@@ -122,9 +122,9 @@
                                             <td class="py-3 px-6 text-center">
                                                 @if($product->is_active)
                                                     <span
-                                                        class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Active</span>
+                                                        class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Hoạt động</span>
                                                 @else
-                                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Inactive</span>
+                                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Không hoạt động</span>
                                                 @endif
                                             </td>
                                             <td class="py-3 px-6 text-center">
@@ -145,7 +145,7 @@
                             </table>
                         </div>
                     @else
-                        <p class="text-gray-500">No products from this brand yet.</p>
+                        <p class="text-gray-500">Chưa có sản phẩm nào từ thương hiệu này.</p>
                     @endif
                 </div>
             </div>

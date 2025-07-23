@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Flower Shop @yield('title')</title>
+    <title>Quản trị - Cửa hàng Hoa @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -15,41 +15,41 @@
         <!-- Sidebar -->
         <div class="hidden md:flex md:flex-col md:w-64 md:bg-pink-800 md:text-white">
             <div class="flex items-center justify-center h-20 border-b border-pink-700">
-                <h1 class="text-2xl font-bold">Flower Shop Admin</h1>
+                <h1 class="text-2xl font-bold">Quản trị Cửa hàng Hoa</h1>
             </div>
             <nav class="flex-grow px-4 pb-4 md:block md:overflow-y-auto">
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded" href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    <i class="fas fa-tachometer-alt mr-2"></i> Bảng điều khiển
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.categories.index') }}">
-                    <i class="fas fa-list mr-2"></i> Categories
+                    <i class="fas fa-list mr-2"></i> Danh mục
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.brands.index') }}">
-                    <i class="fas fa-copyright mr-2"></i> Brands
+                    <i class="fas fa-copyright mr-2"></i> Thương hiệu
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.products.index') }}">
-                    <i class="fas fa-box mr-2"></i> Products
+                    <i class="fas fa-box mr-2"></i> Sản phẩm
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.orders.index') }}">
-                    <i class="fas fa-shopping-cart mr-2"></i> Orders
+                    <i class="fas fa-shopping-cart mr-2"></i> Đơn hàng
                 </a>
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.customers.index') }}">
-                    <i class="fas fa-users mr-2"></i> Customers
+                    <i class="fas fa-users mr-2"></i> Khách hàng
                 </a>
                 @if(auth()->user()->role === 'admin')
                     <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                         href="{{ route('admin.users.index') }}">
-                        <i class="fas fa-user-shield mr-2"></i> Users
+                        <i class="fas fa-user-shield mr-2"></i> Người dùng
                     </a>
                 @endif
                 <a class="block px-4 py-2 mt-2 text-sm hover:bg-pink-700 rounded"
                     href="{{ route('admin.banners.index') }}">
-                    <i class="fas fa-images mr-2"></i> Banners
+                    <i class="fas fa-images mr-2"></i> Banner
                 </a>
             </nav>
         </div>
@@ -68,7 +68,7 @@
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="text-sm text-red-500 hover:text-red-700">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                 </button>
                             </form>
                         </div>

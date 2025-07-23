@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', ' - Brands')
+@section('title', ' - Thương hiệu')
 
 @section('content')
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Brands</h1>
+            <h1 class="text-3xl font-bold">Thương hiệu</h1>
             <a href="{{ route('admin.brands.create') }}"
                 class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
-                <i class="fas fa-plus mr-2"></i> Add Brand
+                <i class="fas fa-plus mr-2"></i> Thêm thương hiệu
             </a>
         </div>
 
@@ -30,10 +30,10 @@
                     <tr>
                         <th class="py-3 px-6 text-left">ID</th>
                         <th class="py-3 px-6 text-left">Logo</th>
-                        <th class="py-3 px-6 text-left">Name</th>
+                        <th class="py-3 px-6 text-left">Tên</th>
                         <th class="py-3 px-6 text-left">Website</th>
-                        <th class="py-3 px-6 text-center">Status</th>
-                        <th class="py-3 px-6 text-center">Actions</th>
+                        <th class="py-3 px-6 text-center">Trạng thái</th>
+                        <th class="py-3 px-6 text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm">
@@ -57,14 +57,14 @@
                                         {{ Str::limit($brand->website, 30) }}
                                     </a>
                                 @else
-                                    <span class="text-gray-400">No website</span>
+                                    <span class="text-gray-400">Không có website</span>
                                 @endif
                             </td>
                             <td class="py-3 px-6 text-center">
                                 @if($brand->is_active)
-                                    <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Active</span>
+                                    <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Hoạt động</span>
                                 @else
-                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Inactive</span>
+                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Không hoạt động</span>
                                 @endif
                             </td>
                             <td class="py-3 px-6 text-center">
@@ -77,8 +77,8 @@
                                         class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form class="inline-block" action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this brand?');">
+                                    <form class="inline-block" action="{{ route('admin.brands.destroy', $brand->id) }}"
+                                        method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110">
@@ -90,7 +90,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-3 px-6 text-center">No brands found</td>
+                            <td colspan="6" class="py-3 px-6 text-center">Không tìm thấy thương hiệu nào</td>
                         </tr>
                     @endforelse
                 </tbody>

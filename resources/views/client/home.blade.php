@@ -1,6 +1,6 @@
 @extends('layouts.client')
 
-@section('title', ' - Beautiful Flowers for All Occasions')
+@section('title', ' - Hoa tươi đẹp cho mọi dịp')
 
 @section('content')
     <!-- Banner Slider -->
@@ -21,7 +21,7 @@
                                 <p class="text-lg md:text-xl text-white mb-6">{{ $banner->description }}</p>
                                 @endif
                                 @if($banner->link)
-                                <a href="{{ $banner->link }}" class="bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md text-lg transition duration-300">Shop Now</a>
+                                <a href="{{ $banner->link }}" class="bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md text-lg transition duration-300">Mua ngay</a>
                                 @endif
                             </div>
                         </div>
@@ -44,7 +44,7 @@
     <!-- Categories Section -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">Shop by Category</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Mua theo danh mục</h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($categories as $category)
                 <a href="{{ route('products.category', $category) }}" class="group">
@@ -72,7 +72,7 @@
     @if($featuredProducts->count() > 0)
     <section class="py-12 bg-pink-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">Featured Flowers</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Hoa nổi bật</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($featuredProducts as $product)
                 <div class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300">
@@ -92,7 +92,7 @@
                             <h3 class="text-lg font-semibold hover:text-pink-600 transition duration-300">{{ $product->name }}</h3>
                         </a>
                         <div class="flex justify-between items-center">
-                            <span class="text-lg font-bold text-pink-600">${{ number_format($product->price, 2) }}</span>
+                    <span class="text-lg font-bold text-pink-600">{{ number_format($product->price, 0, ',', '.') }}₫</span>
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -107,7 +107,7 @@
             </div>
             <div class="text-center mt-8">
                 <a href="{{ route('products.index') }}" class="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
-                    View All Flowers
+                    Xem tất cả hoa
                 </a>
             </div>
         </div>
@@ -117,7 +117,7 @@
     <!-- Latest Products -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">Latest Arrivals</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Sản phẩm mới nhất</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($latestProducts->take(8) as $product)
                 <div class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 border border-gray-200">
@@ -137,7 +137,7 @@
                             <h3 class="text-lg font-semibold hover:text-pink-600 transition duration-300">{{ $product->name }}</h3>
                         </a>
                         <div class="flex justify-between items-center">
-                            <span class="text-lg font-bold text-pink-600">${{ number_format($product->price, 2) }}</span>
+                    <span class="text-lg font-bold text-pink-600">{{ number_format($product->price, 0, ',', '.') }}₫</span>
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -152,7 +152,7 @@
             </div>
             <div class="text-center mt-8">
                 <a href="{{ route('products.index') }}" class="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
-                    View All Flowers
+                    Xem tất cả hoa
                 </a>
             </div>
         </div>

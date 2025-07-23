@@ -4,35 +4,35 @@
 
 @section('content')
     <div class="container-fluid p-6">
-        <div class="mb-6 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Customers</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Customer List</h1>
             <a href="{{ route('admin.customers.create') }}"
-                class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                <i class="fas fa-plus mr-2"></i> Add New Customer
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                <i class="fas fa-plus mr-2"></i> Add Customer
             </a>
         </div>
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-4">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="bg-white rounded shadow p-4 mb-4">
-            <form action="{{ route('admin.customers.index') }}" method="GET" class="flex flex-wrap items-end space-x-4">
-                <div class="flex-grow mb-2">
-                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        placeholder="Search by name, email, or phone">
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <form method="GET" action="{{ route('admin.customers.index') }}" class="flex gap-4 flex-wrap">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700" for="search">Search</label>
+                    <input id="search" name="search" type="text" value="{{ request('search') }}"
+                        placeholder="Name, email, phone..."
+                        class="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-300" />
                 </div>
-                <div class="mb-2">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                        <i class="fas fa-search mr-2"></i> Search
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                        <i class="fas fa-search mr-1"></i> Search
                     </button>
                     <a href="{{ route('admin.customers.index') }}"
-                        class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded ml-2">
-                        <i class="fas fa-times mr-2"></i> Clear
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                        <i class="fas fa-times mr-1"></i> Clear
                     </a>
                 </div>
             </form>
@@ -40,25 +40,25 @@
 
         <div class="bg-white rounded shadow overflow-x-auto">
             <table class="w-full table-auto">
-                <thead>
-                    <tr class="bg-gray-100">
+                <thead class="bg-gray-100">
+                    <tr>
                         <th class="px-4 py-2 text-left">ID</th>
                         <th class="px-4 py-2 text-left">Name</th>
                         <th class="px-4 py-2 text-left">Email</th>
                         <th class="px-4 py-2 text-left">Phone</th>
-                        <th class="px-4 py-2 text-left">Created</th>
+                        <th class="px-4 py-2 text-left">Created At</th>
                         <th class="px-4 py-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($customers as $customer)
-                        <tr class="border-t">
+                    @forelse ($customers as $customer)
+                        <tr class="border-t hover:bg-gray-50">
                             <td class="px-4 py-2">{{ $customer->id }}</td>
                             <td class="px-4 py-2">{{ $customer->name }}</td>
                             <td class="px-4 py-2">{{ $customer->email }}</td>
-                            <td class="px-4 py-2">{{ $customer->phone ?? 'N/A' }}</td>
-                            <td class="px-4 py-2">{{ $customer->created_at->format('M d, Y') }}</td>
-                            <td class="px-4 py-2 flex space-x-2">
+                            <td class="px-4 py-2">{{ $customer->phone ?? '—' }}</td>
+                            <td class="px-4 py-2">{{ $customer->created_at->format('d M Y') }}</td>
+                            <td class="px-4 py-2 flex gap-3">
                                 <a href="{{ route('admin.customers.show', $customer->id) }}"
                                     class="text-blue-500 hover:text-blue-700">
                                     <i class="fas fa-eye"></i>
@@ -67,8 +67,8 @@
                                     class="text-yellow-500 hover:text-yellow-700">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form class="inline-block" action="{{ route('admin.customers.destroy', $customer->id) }}"
-                                    method="POST" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                <form method="POST" action="{{ route('admin.customers.destroy', $customer->id) }}"
+                                    onsubmit="return confirm('Delete this customer?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700">
@@ -79,7 +79,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-2 text-center text-gray-500">No customers found</td>
+                            <td colspan="6" class="px-4 py-2 text-center text-gray-500">No customers found.</td>
                         </tr>
                     @endforelse
                 </tbody>

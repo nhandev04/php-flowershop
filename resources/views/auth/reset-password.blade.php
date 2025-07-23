@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - Flower Shop Admin</title>
+    <title>Đặt lại mật khẩu - Quản trị Cửa hàng Hoa</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -13,17 +13,17 @@
     <div class="min-h-screen flex items-center justify-center bg-gray-100">
         <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
             <div class="flex justify-center mb-8">
-                <h1 class="text-3xl font-bold text-pink-600">Flower Shop Admin</h1>
+                <h1 class="text-3xl font-bold text-pink-600">Quản trị Cửa hàng Hoa</h1>
             </div>
 
-            <h2 class="text-2xl font-semibold mb-6 text-center">Reset Password</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-center">Đặt lại mật khẩu</h2>
 
             <form method="POST" action="{{ route('password.update') }}">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="mb-4">
-                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Địa chỉ Email</label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-pink-500">
                     @error('email')
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">New Password</label>
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mật khẩu mới</label>
                     <input id="password" type="password" name="password" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-pink-500">
                     @error('password')
@@ -41,8 +41,8 @@
                 </div>
 
                 <div class="mb-6">
-                    <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Confirm New
-                        Password</label>
+                    <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Xác nhận mật
+                        khẩu mới</label>
                     <input id="password_confirmation" type="password" name="password_confirmation" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-pink-500">
                 </div>
@@ -50,13 +50,13 @@
                 <div class="mb-4">
                     <button type="submit"
                         class="w-full bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 focus:outline-none focus:bg-pink-700">
-                        Reset Password
+                        Đặt lại mật khẩu
                     </button>
                 </div>
 
                 <div class="text-center">
                     <a href="{{ route('login') }}" class="text-sm text-pink-600 hover:text-pink-800">
-                        Back to Login
+                        Quay lại trang đăng nhập
                     </a>
                 </div>
             </form>

@@ -1,16 +1,16 @@
 @extends('layouts.client')
 
-@section('title', ' - Shopping Cart')
+@section('title', ' - Giỏ hàng')
 
 @section('content')
     <div class="bg-gray-100 py-6">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold mb-2">Shopping Cart</h1>
+            <h1 class="text-3xl font-bold mb-2">Giỏ hàng</h1>
             <nav class="text-sm text-gray-500">
                 <ol class="list-none p-0 flex flex-wrap">
-                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
                     <li class="mx-2">/</li>
-                    <li class="text-pink-600">Shopping Cart</li>
+                    <li class="text-pink-600">Giỏ hàng</li>
                 </ol>
             </nav>
         </div>
@@ -27,23 +27,23 @@
                                 <tr>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Product
+                                        Sản phẩm
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Price
+                                        Giá
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Quantity
+                                        Số lượng
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total
+                                        Tổng
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        Thao tác
                                     </th>
                                 </tr>
                             </thead>
@@ -79,7 +79,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            ${{ number_format($item->product->price, 2) }}
+                                            {{ number_format($item->product->price, 0) }}₫
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <form action="{{ route('cart.update', $item->id) }}" method="POST"
@@ -102,13 +102,13 @@
                                             </form>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            ${{ number_format($item->product->price * $item->quantity, 2) }}
+                                            {{ number_format($item->product->price * $item->quantity, 0) }}₫
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Remove item">
+                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Xóa sản phẩm">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -122,7 +122,7 @@
                     <div class="mt-6 flex justify-between">
                         <a href="{{ route('products.index') }}" class="flex items-center text-pink-600 hover:text-pink-800">
                             <i class="fas fa-arrow-left mr-2"></i>
-                            Continue Shopping
+                            Tiếp tục mua sắm
                         </a>
 
                         <form action="{{ route('cart.clear') }}" method="POST">
@@ -130,7 +130,7 @@
                             @method('DELETE')
                             <button type="submit"
                                 class="bg-gray-200 text-gray-700 py-2 px-4 rounded hover:bg-gray-300 transition duration-200">
-                                Clear Cart
+                                Xóa giỏ hàng
                             </button>
                         </form>
                     </div>
@@ -139,43 +139,43 @@
                 <!-- Order Summary -->
                 <div class="lg:w-1/3">
                     <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-lg font-bold mb-4 pb-2 border-b border-gray-200">Order Summary</h2>
+                        <h2 class="text-lg font-bold mb-4 pb-2 border-b border-gray-200">Tóm tắt đơn hàng</h2>
 
                         <div class="space-y-3 mb-6">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Subtotal</span>
-                                <span class="font-medium">${{ number_format($subtotal, 2) }}</span>
+                                <span class="text-gray-600">Tạm tính</span>
+                                <span class="font-medium">{{ number_format($subtotal, 0) }}₫</span>
                             </div>
 
                             @if($discount > 0)
                                 <div class="flex justify-between text-green-600">
-                                    <span>Discount</span>
-                                    <span>-${{ number_format($discount, 2) }}</span>
+                                    <span>Giảm giá</span>
+                                    <span>-{{ number_format($discount, 0) }}₫</span>
                                 </div>
                             @endif
 
                             @if($tax > 0)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Tax ({{ $taxRate * 100 }}%)</span>
-                                    <span class="font-medium">${{ number_format($tax, 2) }}</span>
+                                    <span class="text-gray-600">Thuế ({{ $taxRate * 100 }}%)</span>
+                                    <span class="font-medium">{{ number_format($tax, 0) }}₫</span>
                                 </div>
                             @endif
 
                             @if($shipping > 0)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Shipping</span>
-                                    <span class="font-medium">${{ number_format($shipping, 2) }}</span>
+                                    <span class="text-gray-600">Phí vận chuyển</span>
+                                    <span class="font-medium">{{ number_format($shipping, 0) }}₫</span>
                                 </div>
                             @else
                                 <div class="flex justify-between text-green-600">
-                                    <span>Shipping</span>
-                                    <span>Free</span>
+                                    <span>Phí vận chuyển</span>
+                                    <span>Miễn phí</span>
                                 </div>
                             @endif
 
                             <div class="pt-2 border-t border-gray-200 flex justify-between">
-                                <span class="text-lg font-bold">Total</span>
-                                <span class="text-lg font-bold text-pink-600">${{ number_format($total, 2) }}</span>
+                                <span class="text-lg font-bold">Tổng cộng</span>
+                                <span class="text-lg font-bold text-pink-600">{{ number_format($total, 0) }}₫</span>
                             </div>
                         </div>
 
@@ -183,14 +183,14 @@
                         <div class="mb-6 pt-4 border-t border-gray-200">
                             <form action="{{ route('cart.apply-coupon') }}" method="POST" class="flex flex-col space-y-2">
                                 @csrf
-                                <label for="coupon" class="text-sm font-medium text-gray-700">Coupon Code</label>
+                                <label for="coupon" class="text-sm font-medium text-gray-700">Mã giảm giá</label>
                                 <div class="flex">
                                     <input type="text" id="coupon" name="coupon" value="{{ session('coupon_code', '') }}"
                                         class="flex-1 border-gray-300 rounded-l-md focus:ring-pink-500 focus:border-pink-500"
-                                        placeholder="Enter coupon code">
+                                        placeholder="Nhập mã giảm giá">
                                     <button type="submit"
                                         class="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-r-md hover:bg-gray-200 focus:outline-none">
-                                        Apply
+                                        Áp dụng
                                     </button>
                                 </div>
                                 @if(session('coupon_message'))
@@ -205,13 +205,13 @@
                         <div class="mt-6">
                             <a href="{{ route('checkout') }}"
                                 class="block w-full bg-pink-600 hover:bg-pink-700 text-white text-center py-3 px-4 rounded-md transition duration-300">
-                                Proceed to Checkout
+                                Tiến hành thanh toán
                             </a>
                         </div>
 
                         <!-- Payment Methods -->
                         <div class="mt-6 pt-4 border-t border-gray-200">
-                            <p class="text-xs text-gray-500 mb-2">Secure Checkout</p>
+                            <p class="text-xs text-gray-500 mb-2">Thanh toán an toàn</p>
                             <div class="flex gap-2">
                                 <span class="text-gray-400"><i class="fab fa-cc-visa text-2xl"></i></span>
                                 <span class="text-gray-400"><i class="fab fa-cc-mastercard text-2xl"></i></span>

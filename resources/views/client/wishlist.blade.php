@@ -1,16 +1,16 @@
 @extends('layouts.client')
 
-@section('title', ' - My Wishlist')
+@section('title', ' - Danh sách yêu thích của tôi')
 
 @section('content')
     <div class="bg-gray-100 py-6">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold mb-2">My Wishlist</h1>
+            <h1 class="text-3xl font-bold mb-2">Danh sách yêu thích</h1>
             <nav class="text-sm text-gray-500">
                 <ol class="list-none p-0 flex flex-wrap">
-                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Home</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
                     <li class="mx-2">/</li>
-                    <li class="text-pink-600">Wishlist</li>
+                    <li class="text-pink-600">Yêu thích</li>
                 </ol>
             </nav>
         </div>
@@ -19,7 +19,7 @@
     <div class="container mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-800">Wishlist Items</h2>
+                <h2 class="text-xl font-bold text-gray-800">Sản phẩm yêu thích</h2>
             </div>
 
             @if($wishlistItems->count() > 0)
@@ -44,7 +44,7 @@
                                     @method('DELETE')
                                     <button type="submit"
                                         class="bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors duration-300"
-                                        title="Remove from wishlist">
+                                        title="Xóa khỏi danh sách yêu thích">
                                         <i class="fas fa-heart text-red-500"></i>
                                     </button>
                                 </form>
@@ -57,12 +57,12 @@
                                     </a>
                                     <div class="flex justify-between items-center mb-2">
                                         <span
-                                            class="text-lg font-bold text-pink-600">${{ number_format($item->product->price, 2) }}</span>
+                                            class="text-lg font-bold text-pink-600">{{ number_format($item->product->price, 0, ',', '.') }}₫</span>
                                         <div>
                                             @if($item->product->stock > 0)
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">In Stock</span>
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Còn hàng</span>
                                             @else
-                                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Out of Stock</span>
+                                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Hết hàng</span>
                                             @endif
                                         </div>
                                     </div>
@@ -73,11 +73,11 @@
                                         <button type="submit"
                                             class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md transition duration-300 {{ $item->product->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
                                             {{ $item->product->stock <= 0 ? 'disabled' : '' }}>
-                                            Add to Cart
+                                            Thêm vào giỏ hàng
                                         </button>
                                     </form>
                                 @else
-                                    <p class="text-gray-500">Product no longer available</p>
+                                    <p class="text-gray-500">Sản phẩm không còn tồn tại</p>
                                 @endif
                             </div>
                         </div>
@@ -88,11 +88,11 @@
                     <div class="text-gray-400 mb-4">
                         <i class="fas fa-heart text-6xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">Your Wishlist is Empty</h3>
-                    <p class="text-gray-500 mb-6">You don't have any products in your wishlist yet.</p>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">Danh sách yêu thích của bạn đang trống</h3>
+                    <p class="text-gray-500 mb-6">Bạn chưa có sản phẩm nào trong danh sách yêu thích.</p>
                     <a href="{{ route('products.index') }}"
                         class="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
-                        Start Shopping
+                        Mua sắm ngay
                     </a>
                 </div>
             @endif

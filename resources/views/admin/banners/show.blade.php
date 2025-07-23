@@ -1,30 +1,30 @@
 @extends('layouts.admin')
 
-@section('title', 'Banner Details')
+@section('title', 'Chi tiết Banner')
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4">Banner Details</h1>
+        <h1 class="mt-4">Chi tiết Banner</h1>
         <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.banners.index') }}">Banners</a></li>
-            <li class="breadcrumb-item active">Banner Details: {{ $banner->title }}</li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Bảng điều khiển</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.banners.index') }}">Banner</a></li>
+            <li class="breadcrumb-item active">Chi tiết Banner: {{ $banner->title }}</li>
         </ol>
 
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <i class="fas fa-info-circle me-1"></i>
-                Banner Information
+                Thông tin Banner
                 <div class="float-end">
                     <a href="{{ route('admin.banners.edit', $banner) }}" class="btn btn-sm btn-light">
-                        <i class="fas fa-edit me-1"></i> Edit
+                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
                     </a>
                     <form action="{{ route('admin.banners.destroy', $banner) }}" method="POST" class="d-inline"
-                        onsubmit="return confirm('Are you sure you want to delete this banner?');">
+                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa banner này?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash me-1"></i> Delete
+                            <i class="fas fa-trash me-1"></i> Xóa
                         </button>
                     </form>
                 </div>
@@ -38,59 +38,59 @@
                                 <td>{{ $banner->id }}</td>
                             </tr>
                             <tr>
-                                <th>Title:</th>
+                                <th>Tiêu đề:</th>
                                 <td>{{ $banner->title }}</td>
                             </tr>
                             <tr>
-                                <th>Description:</th>
-                                <td>{{ $banner->description ?: 'No description' }}</td>
+                                <th>Mô tả:</th>
+                                <td>{{ $banner->description ?: 'Không có mô tả' }}</td>
                             </tr>
                             <tr>
-                                <th>Link URL:</th>
+                                <th>Đường dẫn URL:</th>
                                 <td>
                                     @if($banner->link)
                                         <a href="{{ $banner->link }}" target="_blank"
                                             class="text-primary">{{ $banner->link }}</a>
                                     @else
-                                        No link
+                                        Không có đường dẫn
                                     @endif
                                 </td>
                             </tr>
                             <tr>
-                                <th>Sort Order:</th>
+                                <th>Thứ tự sắp xếp:</th>
                                 <td>{{ $banner->sort_order }}</td>
                             </tr>
                             <tr>
-                                <th>Status:</th>
+                                <th>Trạng thái:</th>
                                 <td>
                                     @if($banner->is_active)
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge bg-success">Hoạt động</span>
                                     @else
-                                        <span class="badge bg-danger">Inactive</span>
+                                        <span class="badge bg-danger">Không hoạt động</span>
                                     @endif
                                 </td>
                             </tr>
                             <tr>
-                                <th>Created:</th>
-                                <td>{{ $banner->created_at->format('M d, Y H:i') }}</td>
+                                <th>Ngày tạo:</th>
+                                <td>{{ $banner->created_at->format('d/m/Y H:i') }}</td>
                             </tr>
                             <tr>
-                                <th>Updated:</th>
-                                <td>{{ $banner->updated_at->format('M d, Y H:i') }}</td>
+                                <th>Cập nhật lần cuối:</th>
+                                <td>{{ $banner->updated_at->format('d/m/Y H:i') }}</td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-md-6">
                         @if($banner->image)
                             <div class="text-center">
-                                <h5>Banner Image</h5>
+                                <h5>Hình ảnh Banner</h5>
                                 <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->title }}"
                                     class="img-fluid img-thumbnail" style="max-height: 400px;">
                             </div>
                         @else
                             <div class="text-center text-muted">
                                 <i class="fas fa-image fa-3x"></i>
-                                <p class="mt-2">No image uploaded</p>
+                                <p class="mt-2">Chưa tải lên hình ảnh</p>
                             </div>
                         @endif
                     </div>
@@ -101,7 +101,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-eye me-1"></i>
-                Preview
+                Xem trước
             </div>
             <div class="card-body">
                 @if($banner->image)
@@ -115,14 +115,14 @@
                                 <p class="lead mb-3">{{ $banner->description }}</p>
                             @endif
                             @if($banner->link)
-                                <a href="{{ $banner->link }}" class="btn btn-primary btn-lg">Learn More</a>
+                                <a href="{{ $banner->link }}" class="btn btn-primary btn-lg">Xem thêm</a>
                             @endif
                         </div>
                     </div>
                 @else
                     <div class="text-center text-muted py-5">
                         <i class="fas fa-image fa-3x"></i>
-                        <p class="mt-2">No image to preview</p>
+                        <p class="mt-2">Không có hình ảnh để xem trước</p>
                     </div>
                 @endif
             </div>

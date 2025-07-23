@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', ' - Categories')
+@section('title', ' - Danh mục sản phẩm')
 
 @section('content')
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Categories</h1>
+            <h1 class="text-3xl font-bold">Danh mục sản phẩm</h1>
             <a href="{{ route('admin.categories.create') }}"
                 class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
-                <i class="fas fa-plus mr-2"></i> Add Category
+                <i class="fas fa-plus mr-2"></i> Thêm danh mục
             </a>
         </div>
 
@@ -23,11 +23,11 @@
                 <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <tr>
                         <th class="py-3 px-6 text-left">ID</th>
-                        <th class="py-3 px-6 text-left">Image</th>
-                        <th class="py-3 px-6 text-left">Name</th>
-                        <th class="py-3 px-6 text-left">Description</th>
-                        <th class="py-3 px-6 text-center">Status</th>
-                        <th class="py-3 px-6 text-center">Actions</th>
+                        <th class="py-3 px-6 text-left">Hình ảnh</th>
+                        <th class="py-3 px-6 text-left">Tên</th>
+                        <th class="py-3 px-6 text-left">Mô tả</th>
+                        <th class="py-3 px-6 text-center">Trạng thái</th>
+                        <th class="py-3 px-6 text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm">
@@ -48,27 +48,28 @@
                             <td class="py-3 px-6">{{ Str::limit($category->description, 50) }}</td>
                             <td class="py-3 px-6 text-center">
                                 @if($category->is_active)
-                                    <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Active</span>
+                                    <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs">Đang hoạt động</span>
                                 @else
-                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Inactive</span>
+                                    <span class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs">Tạm dừng</span>
                                 @endif
                             </td>
                             <td class="py-3 px-6 text-center">
                                 <div class="flex item-center justify-center">
                                     <a href="{{ route('admin.categories.show', $category->id) }}"
-                                        class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                        class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.categories.edit', $category->id) }}"
-                                        class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110">
+                                        class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110" title="Chỉnh sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form class="inline-block" action="{{ route('admin.categories.destroy', $category->id) }}"
                                         method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110">
+                                        <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110"
+                                            title="Xóa">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -77,7 +78,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-3 px-6 text-center">No categories found</td>
+                            <td colspan="6" class="py-3 px-6 text-center">Không tìm thấy danh mục nào</td>
                         </tr>
                     @endforelse
                 </tbody>

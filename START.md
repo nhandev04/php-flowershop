@@ -69,6 +69,11 @@ DB_PASSWORD=your_password
 ```bash
 php artisan key:generate
 ```
+Or manually set the `APP_KEY` in your `.env` file.
+
+```env
+APP_KEY=base64:your_generated_key_here
+```
 
 ### 6. Database Setup
 

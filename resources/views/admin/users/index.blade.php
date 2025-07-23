@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', ' - Users')
+@section('title', ' - Người dùng')
 
 @section('content')
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Users</h1>
+            <h1 class="text-3xl font-bold">Người dùng</h1>
             <a href="{{ route('admin.users.create') }}"
                 class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
-                <i class="fas fa-plus mr-2"></i> Add User
+                <i class="fas fa-plus mr-2"></i> Thêm người dùng
             </a>
         </div>
 
@@ -29,12 +29,12 @@
                 <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <tr>
                         <th class="py-3 px-6 text-left">ID</th>
-                        <th class="py-3 px-6 text-left">Name</th>
-                        <th class="py-3 px-6 text-left">Username</th>
+                        <th class="py-3 px-6 text-left">Họ tên</th>
+                        <th class="py-3 px-6 text-left">Tên đăng nhập</th>
                         <th class="py-3 px-6 text-left">Email</th>
-                        <th class="py-3 px-6 text-center">Role</th>
-                        <th class="py-3 px-6 text-center">Created</th>
-                        <th class="py-3 px-6 text-center">Actions</th>
+                        <th class="py-3 px-6 text-center">Vai trò</th>
+                        <th class="py-3 px-6 text-center">Ngày tạo</th>
+                        <th class="py-3 px-6 text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm">
@@ -46,30 +46,32 @@
                             <td class="py-3 px-6">{{ $user->email }}</td>
                             <td class="py-3 px-6 text-center">
                                 @if($user->role === 'admin')
-                                    <span class="bg-purple-100 text-purple-800 py-1 px-3 rounded-full text-xs">Admin</span>
+                                    <span class="bg-purple-100 text-purple-800 py-1 px-3 rounded-full text-xs">Quản trị viên</span>
                                 @else
-                                    <span class="bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-xs">User</span>
+                                    <span class="bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-xs">Người dùng</span>
                                 @endif
                             </td>
                             <td class="py-3 px-6 text-center">
-                                {{ $user->created_at->format('M d, Y') }}
+                                {{ $user->created_at->format('d/m/Y') }}
                             </td>
                             <td class="py-3 px-6 text-center">
                                 <div class="flex item-center justify-center">
                                     <a href="{{ route('admin.users.show', $user->id) }}"
-                                        class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                        class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110" title="Xem">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.users.edit', $user->id) }}"
-                                        class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110">
+                                        class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110" title="Sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if(auth()->user()->id !== $user->id)
-                                        <form class="inline-block" action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                            onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        <form class="inline-block" action="{{ route('admin.users.destroy', $user->id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này không?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110">
+                                            <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110"
+                                                title="Xóa">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -79,7 +81,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-3 px-6 text-center">No users found</td>
+                            <td colspan="7" class="py-3 px-6 text-center">Không tìm thấy người dùng nào</td>
                         </tr>
                     @endforelse
                 </tbody>

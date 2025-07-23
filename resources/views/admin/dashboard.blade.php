@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', ' - Dashboard')
+@section('title', ' - Bảng điều khiển')
 
 @section('content')
 <div class="container mx-auto px-4">
-    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+    <h1 class="text-3xl font-bold mb-6">Bảng điều khiển</h1>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow p-6">
@@ -13,7 +13,7 @@
                     <i class="fas fa-box fa-2x"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-gray-500 text-sm">Total Products</p>
+                    <p class="text-gray-500 text-sm">Tổng số sản phẩm</p>
                     <h3 class="text-2xl font-bold">{{ $totalProducts }}</h3>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                     <i class="fas fa-shopping-cart fa-2x"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-gray-500 text-sm">Latest Orders</p>
+                    <p class="text-gray-500 text-sm">Đơn hàng mới nhất</p>
                     <h3 class="text-2xl font-bold">{{ $latestOrders->count() }}</h3>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                     <i class="fas fa-users fa-2x"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-gray-500 text-sm">Total Customers</p>
+                    <p class="text-gray-500 text-sm">Tổng số khách hàng</p>
                     <h3 class="text-2xl font-bold">{{ $totalCustomers }}</h3>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     <i class="fas fa-list fa-2x"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-gray-500 text-sm">Total Categories</p>
+                    <p class="text-gray-500 text-sm">Tổng số danh mục</p>
                     <h3 class="text-2xl font-bold">{{ $totalCategories }}</h3>
                 </div>
             </div>
@@ -58,15 +58,15 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Latest Products</h2>
+            <h2 class="text-xl font-bold mb-4">Sản phẩm mới nhất</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hình ảnh</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,16 +85,16 @@
                                 <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">${{ number_format($product->price, 2) }}</div>
+                                <div class="text-sm text-gray-900">{{ number_format($product->price, 0) }}₫</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($product->is_active)
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Active
+                                    Hoạt động
                                 </span>
                                 @else
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Inactive
+                                    Không hoạt động
                                 </span>
                                 @endif
                             </td>
@@ -106,15 +106,15 @@
         </div>
         
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Latest Orders</h2>
+            <h2 class="text-xl font-bold mb-4">Đơn hàng mới nhất</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã đơn hàng</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng tiền</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,33 +127,33 @@
                                 <div class="text-sm text-gray-900">{{ $order->customer->name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">${{ number_format($order->total_amount, 2) }}</div>
+                                <div class="text-sm text-gray-900">{{ number_format($order->total_amount, 0) }}₫</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @switch($order->status)
                                     @case('pending')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            Pending
+                                            Đang chờ
                                         </span>
                                         @break
                                     @case('processing')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            Processing
+                                            Đang xử lý
                                         </span>
                                         @break
                                     @case('shipped')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                            Shipped
+                                            Đã giao hàng
                                         </span>
                                         @break
                                     @case('delivered')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Delivered
+                                            Đã nhận hàng
                                         </span>
                                         @break
                                     @case('cancelled')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            Cancelled
+                                            Đã hủy
                                         </span>
                                         @break
                                     @default

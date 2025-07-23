@@ -21,7 +21,7 @@
                     class="block px-3 py-2 rounded-md {{ request()->routeIs('account.dashboard') ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-50' }}">
                     <div class="flex items-center">
                         <i class="fas fa-tachometer-alt w-5 h-5"></i>
-                        <span class="ml-2">Dashboard</span>
+                        <span class="ml-2">Bảng điều khiển</span>
                     </div>
                 </a>
 
@@ -29,7 +29,7 @@
                     class="block px-3 py-2 rounded-md {{ request()->routeIs('account.orders') ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-50' }}">
                     <div class="flex items-center">
                         <i class="fas fa-shopping-bag w-5 h-5"></i>
-                        <span class="ml-2">My Orders</span>
+                        <span class="ml-2">Đơn hàng của tôi</span>
                     </div>
                 </a>
 
@@ -37,7 +37,7 @@
                     class="block px-3 py-2 rounded-md {{ request()->routeIs('account.profile') ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-50' }}">
                     <div class="flex items-center">
                         <i class="fas fa-user w-5 h-5"></i>
-                        <span class="ml-2">Profile</span>
+                        <span class="ml-2">Hồ sơ</span>
                     </div>
                 </a>
 
@@ -45,7 +45,7 @@
                     class="block px-3 py-2 rounded-md {{ request()->routeIs('account.addresses') ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-50' }}">
                     <div class="flex items-center">
                         <i class="fas fa-map-marker-alt w-5 h-5"></i>
-                        <span class="ml-2">Addresses</span>
+                        <span class="ml-2">Địa chỉ</span>
                     </div>
                 </a>
 
@@ -53,7 +53,7 @@
                     class="block px-3 py-2 rounded-md {{ request()->routeIs('account.wishlist') ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-50' }}">
                     <div class="flex items-center">
                         <i class="fas fa-heart w-5 h-5"></i>
-                        <span class="ml-2">Wishlist</span>
+                        <span class="ml-2">Yêu thích</span>
                     </div>
                 </a>
 
@@ -63,7 +63,7 @@
                         class="w-full text-left block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-50">
                         <div class="flex items-center">
                             <i class="fas fa-sign-out-alt w-5 h-5"></i>
-                            <span class="ml-2">Logout</span>
+                            <span class="ml-2">Đăng xuất</span>
                         </div>
                     </button>
                 </form>

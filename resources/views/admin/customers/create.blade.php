@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Customer')
+@section('title', 'Thêm khách hàng')
 
 @section('content')
     <div class="container-fluid p-6">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold">Create Customer</h1>
+            <h1 class="text-2xl font-bold">Thêm khách hàng mới</h1>
             <div class="mt-2">
                 <a href="{{ route('admin.customers.index') }}" class="text-blue-500 hover:text-blue-700">
-                    <i class="fas fa-arrow-left mr-2"></i> Back to Customers
+                    <i class="fas fa-arrow-left mr-2"></i> Quay lại danh sách khách hàng
                 </a>
             </div>
         </div>
@@ -28,7 +28,7 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Họ và tên</label>
                     <input type="text" name="name" id="name" value="{{ old('name') }}" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
@@ -40,33 +40,33 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Số điện thoại</label>
                     <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
                 <div class="mb-4">
-                    <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Địa chỉ</label>
                     <textarea name="address" id="address" rows="3"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('address') }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
                     <input type="password" name="password" id="password" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
                 <div class="mb-4">
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm
-                        Password</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Xác nhận mật
+                        khẩu</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
                 <div class="mt-6">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                        <i class="fas fa-save mr-2"></i> Create Customer
+                        <i class="fas fa-save mr-2"></i> Thêm khách hàng
                     </button>
                 </div>
             </form>
