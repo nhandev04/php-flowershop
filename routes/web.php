@@ -110,6 +110,8 @@ Route::prefix('ad')->middleware(['auth'])->group(function () {
         'update' => 'admin.products.update',
         'destroy' => 'admin.products.destroy',
     ]);
+    Route::post('products/bulk-action', [ProductController::class, 'bulkAction'])->name('admin.products.bulk-action');
+    Route::get('products/export', [ProductController::class, 'export'])->name('admin.products.export');
 
     // Users
     Route::resource('users', UserController::class)->names([
