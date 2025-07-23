@@ -5,10 +5,7 @@
 @section('content')
     <div class="bg-gray-100 py-6">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-                                        <div class="flex justify-between items-center">
-                                        <span
-                                            class="text-lg font-bold text-pink-600">{{ number_format($product->price, 0) }}₫</span>
-                                        <div class="flex gap-2"> mb-2">{{ $title ?? 'Tất cả hoa' }}</h1>
+            <h1 class="text-3xl font-bold mb-2">{{ $title ?? 'Tất cả hoa' }}</h1>
             <nav class="text-sm text-gray-500">
                 <ol class="list-none p-0 flex flex-wrap">
                     <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
