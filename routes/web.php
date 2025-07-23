@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -73,7 +73,6 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Admin Routes (Protected by auth middleware only for testing)
 Route::prefix('ad')->middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -101,7 +100,8 @@ Route::prefix('ad')->middleware(['auth'])->group(function () {
     ]);
 
     // Products
-    Route::resource('products', ProductController::class)->names([
+    Route::resource('products', AdminProductController::class)->names([
+        'test' => 'admin.products.test',
         'index' => 'admin.products.index',
         'create' => 'admin.products.create',
         'store' => 'admin.products.store',
@@ -110,8 +110,10 @@ Route::prefix('ad')->middleware(['auth'])->group(function () {
         'update' => 'admin.products.update',
         'destroy' => 'admin.products.destroy',
     ]);
-    Route::post('products/bulk-action', [ProductController::class, 'bulkAction'])->name('admin.products.bulk-action');
-    Route::get('products/export', [ProductController::class, 'export'])->name('admin.products.export');
+
+    // Additional Product Routes
+    Route::get('products/export', [AdminProductController::class, 'export'])->name('admin.products.export');
+    Route::post('products/bulk-action', [AdminProductController::class, 'bulkAction'])->name('admin.products.bulk-action');
 
     // Users
     Route::resource('users', UserController::class)->names([
