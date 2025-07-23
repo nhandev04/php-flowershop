@@ -33,7 +33,7 @@ class BrandFactory extends Factory
 
         return [
             'name' => fake()->unique()->randomElement($flowerBrands),
-            'image' => 'brands/brand-' . fake()->numberBetween(1, 10) . '.jpg',
+            'logo' => 'brands/brand-' . fake()->numberBetween(1, 10) . '.jpg',
             'description' => fake()->paragraph(),
             'is_active' => true,
         ];
