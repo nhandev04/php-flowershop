@@ -213,18 +213,10 @@
                     </div>
 
                     <div class="flex items-center space-x-4">
-                        <!-- Search Bar -->
-                        <form action="{{ route('products.index') }}" method="GET" class="hidden md:flex">
-                            <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
-                                class="px-3 py-1 text-black rounded-l-md focus:outline-none border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white w-48">
-                            <button type="submit"
-                                class="bg-pink-600 hover:bg-pink-700 px-3 py-1 rounded-r-md text-white">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
+
 
                         <!-- Dark mode toggle -->
-                        <button @click="darkMode = !darkMode"
+                        <!-- <button @click="darkMode = !darkMode"
                             class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-lg transition-colors duration-200 relative"
                             title="Chuyển đổi chế độ tối">
                             <i x-show="!darkMode" class="fas fa-moon text-lg"></i>
@@ -241,7 +233,7 @@
                                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
                             </span>
-                        </button>
+                        </button> -->
 
                         <!-- Notifications -->
                         <div class="relative" x-data="{ open: false }">
