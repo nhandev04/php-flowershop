@@ -41,11 +41,12 @@
                         <tr class="border-b border-gray-200 hover:bg-gray-50">
                             <td class="py-3 px-6">{{ $brand->id }}</td>
                             <td class="py-3 px-6">
-                                @if($brand->logo)
-                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
-                                        class="h-10 w-10 rounded-full object-cover">
+                                @if($brand->image)
+                                    <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
+                                        class="h-10 w-10 rounded-full object-cover"
+                                        onerror="this.onerror=null; this.src='{{ asset('storage/brands/default.png') }}'; this.classList.add('img-error')">
                                 @else
-                                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center dark:bg-gray-700">
                                         <i class="fas fa-image text-gray-400"></i>
                                     </div>
                                 @endif

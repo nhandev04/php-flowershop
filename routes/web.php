@@ -17,6 +17,8 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\WishlistController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\AuthController;
 
 // Client Routes
@@ -169,4 +171,14 @@ Route::prefix('ad')->middleware(['auth'])->group(function () {
         'update' => 'admin.banners.update',
         'destroy' => 'admin.banners.destroy',
     ]);
+
+    // Profile Routes
+    Route::get('profile', [ProfileController::class, 'show'])->name('admin.profile');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::put('profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+
+    // Settings Routes
+    Route::get('settings', [SettingsController::class, 'index'])->name('admin.settings');
+    Route::put('settings', [SettingsController::class, 'update'])->name('admin.settings.update');
+    Route::post('settings/clear-cache', [SettingsController::class, 'clearCache'])->name('admin.settings.clear-cache');
 });

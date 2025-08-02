@@ -35,7 +35,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -45,9 +45,9 @@ class BrandController extends Controller
         $brand->website = $validated['website'] ?? null;
         $brand->is_active = isset($validated['is_active']) ? true : false;
 
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('brands', 'public');
-            $brand->logo = $logoPath;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('brands', 'public');
+            $brand->image = $imagePath;
         }
 
         $brand->save();
@@ -83,7 +83,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -93,14 +93,14 @@ class BrandController extends Controller
         $brand->website = $validated['website'] ?? null;
         $brand->is_active = isset($validated['is_active']) ? true : false;
 
-        if ($request->hasFile('logo')) {
-            // Delete the old logo if exists
-            if ($brand->logo) {
-                Storage::disk('public')->delete($brand->logo);
+        if ($request->hasFile('image')) {
+            // Delete the old image if exists
+            if ($brand->image) {
+                Storage::disk('public')->delete($brand->image);
             }
 
-            $logoPath = $request->file('logo')->store('brands', 'public');
-            $brand->logo = $logoPath;
+            $imagePath = $request->file('image')->store('brands', 'public');
+            $brand->image = $imagePath;
         }
 
         $brand->save();
@@ -122,9 +122,9 @@ class BrandController extends Controller
                 ->with('error', 'Cannot delete brand because it has associated products.');
         }
 
-        // Delete logo if exists
-        if ($brand->logo) {
-            Storage::disk('public')->delete($brand->logo);
+        // Delete image if exists
+        if ($brand->image) {
+            Storage::disk('public')->delete($brand->image);
         }
 
         $brand->delete();

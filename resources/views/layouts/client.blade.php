@@ -30,8 +30,8 @@
                 </nav>
 
                 <div class="flex items-center space-x-4">
-                    <form action="{{ route('products.search') }}" method="GET" class="hidden md:flex">
-                        <input type="text" name="query" placeholder="Tìm kiếm hoa..."
+                    <form action="/products" method="GET" class="hidden md:flex">
+                        <input type="text" name="search" placeholder="Tìm kiếm hoa..."
                             class="px-3 py-1 text-black rounded-l-md focus:outline-none">
                         <button type="submit" class="bg-pink-700 px-3 py-1 rounded-r-md hover:bg-pink-800">
                             <i class="fas fa-search"></i>

@@ -45,9 +45,9 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="logo" class="block text-gray-700 text-sm font-bold mb-2">Hình logo</label>
-                    <input type="file" name="logo" id="logo" class="w-full py-2 @error('logo') border-red-500 @enderror">
-                    @error('logo')
+                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Hình ảnh</label>
+                    <input type="file" name="image" id="image" class="w-full py-2 @error('image') border-red-500 @enderror">
+                    @error('image')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                     @enderror
                 </div>

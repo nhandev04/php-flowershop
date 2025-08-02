@@ -46,16 +46,16 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="logo" class="block text-gray-700 text-sm font-bold mb-2">Hình logo</label>
-                    @if($brand->logo)
+                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Hình ảnh</label>
+                    @if($brand->image)
                         <div class="mb-2">
-                            <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
+                            <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
                                 class="h-24 w-24 object-cover rounded">
                         </div>
                     @endif
-                    <input type="file" name="logo" id="logo" class="w-full py-2 @error('logo') border-red-500 @enderror">
-                    <p class="text-gray-500 text-xs mt-1">Để trống nếu muốn giữ logo hiện tại</p>
-                    @error('logo')
+                    <input type="file" name="image" id="image" class="w-full py-2 @error('image') border-red-500 @enderror">
+                    <p class="text-gray-500 text-xs mt-1">Để trống nếu muốn giữ hình ảnh hiện tại</p>
+                    @error('image')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                     @enderror
                 </div>

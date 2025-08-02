@@ -73,16 +73,16 @@
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-bold mb-4">Hình logo</h3>
+                        <h3 class="text-xl font-bold mb-4">Hình ảnh</h3>
 
-                        @if($brand->logo)
-                            <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
+                        @if($brand->image)
+                            <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
                                 class="max-w-full h-auto rounded-lg shadow">
                         @else
                             <div class="h-48 w-full rounded-lg bg-gray-200 flex items-center justify-center">
                                 <i class="fas fa-image text-gray-400 text-4xl"></i>
                             </div>
-                            <p class="text-gray-500 mt-2">Chưa có hình logo</p>
+                            <p class="text-gray-500 mt-2">Chưa có hình ảnh</p>
                         @endif
                     </div>
                 </div>
