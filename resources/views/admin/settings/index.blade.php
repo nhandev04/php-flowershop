@@ -12,6 +12,15 @@
                 <p class="text-gray-600 dark:text-gray-400">Quản lý cấu hình và tùy chọn hệ thống</p>
             </div>
             <div class="flex gap-3">
+                <form action="{{ route('admin.settings.reset') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+                        onclick="return confirm('Bạn có chắc chắn muốn khôi phục về cài đặt mặc định?')">
+                        <i class="fas fa-redo-alt mr-2"></i>
+                        Khôi phục mặc định
+                    </button>
+                </form>
                 <form action="{{ route('admin.settings.clear-cache') }}" method="POST" class="inline">
                     @csrf
                     <button type="submit"
@@ -56,56 +65,50 @@
                     @csrf
                     @method('PUT')
 
-                    <!-- Website Information -->
+                    <!-- General Settings Tab -->
                     <div class="space-y-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
                             <i class="fas fa-globe mr-2 text-blue-500"></i>
-                            Thông tin website
+                            Thông tin chung
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Site Name -->
-                            <div>
-                                <label for="site_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Tên website <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('site_name') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="site_name" name="site_name" value="{{ old('site_name', $settings['site_name']) }}" required>
-                                @error('site_name')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Currency -->
-                            <div>
-                                <label for="currency" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Đơn vị tiền tệ <span class="text-red-500">*</span>
-                                </label>
-                                <select 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('currency') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="currency" name="currency" required>
-                                    <option value="VND" {{ old('currency', $settings['currency']) == 'VND' ? 'selected' : '' }}>VND - Việt Nam Đồng</option>
-                                    <option value="USD" {{ old('currency', $settings['currency']) == 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
-                                    <option value="EUR" {{ old('currency', $settings['currency']) == 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
-                                </select>
-                                @error('currency')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Site Description -->
-                            <div class="md:col-span-2">
-                                <label for="site_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Mô tả website
-                                </label>
-                                <textarea 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('site_description') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="site_description" name="site_description" rows="3">{{ old('site_description', $settings['site_description']) }}</textarea>
-                                @error('site_description')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            @foreach($generalSettings as $setting)
+                                <div class="{{ $setting->type == 'textarea' ? 'md:col-span-2' : '' }}">
+                                    <label for="{{ $setting->key }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ $setting->label }} 
+                                        @if($setting->key == 'site_name' || $setting->key == 'items_per_page')
+                                            <span class="text-red-500">*</span>
+                                        @endif
+                                    </label>
+                                    
+                                    @if($setting->type == 'text' || $setting->type == 'email' || $setting->type == 'number')
+                                        <input type="{{ $setting->type }}" 
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ old($setting->key, $setting->value) }}"
+                                            {{ $setting->key == 'site_name' || $setting->key == 'items_per_page' ? 'required' : '' }}>
+                                    @elseif($setting->type == 'textarea')
+                                        <textarea 
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" rows="3">{{ old($setting->key, $setting->value) }}</textarea>
+                                    @elseif($setting->type == 'boolean')
+                                        <div class="flex items-center">
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="{{ $setting->key }}" name="{{ $setting->key }}" 
+                                                    {{ $setting->value == '1' ? 'checked' : '' }}>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $setting->value == '1' ? 'Đang bật' : 'Đang tắt' }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                    
+                                    @error($setting->key)
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -117,45 +120,31 @@
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Contact Email -->
-                            <div>
-                                <label for="contact_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email liên hệ <span class="text-red-500">*</span>
-                                </label>
-                                <input type="email" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('contact_email') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="contact_email" name="contact_email" value="{{ old('contact_email', $settings['contact_email']) }}" required>
-                                @error('contact_email')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Contact Phone -->
-                            <div>
-                                <label for="contact_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Số điện thoại liên hệ
-                                </label>
-                                <input type="tel" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('contact_phone') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="contact_phone" name="contact_phone" value="{{ old('contact_phone', $settings['contact_phone']) }}">
-                                @error('contact_phone')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Address -->
-                            <div class="md:col-span-2">
-                                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Địa chỉ
-                                </label>
-                                <textarea 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('address') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="address" name="address" rows="3">{{ old('address', $settings['address']) }}</textarea>
-                                @error('address')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
+                            @foreach($contactSettings as $setting)
+                                <div class="{{ $setting->type == 'textarea' ? 'md:col-span-2' : '' }}">
+                                    <label for="{{ $setting->key }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ $setting->label }}
+                                        @if($setting->key == 'contact_email')
+                                            <span class="text-red-500">*</span>
+                                        @endif
+                                    </label>
+                                    
+                                    @if($setting->type == 'text' || $setting->type == 'email')
+                                        <input type="{{ $setting->type }}" 
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ old($setting->key, $setting->value) }}"
+                                            {{ $setting->key == 'contact_email' ? 'required' : '' }}>
+                                    @elseif($setting->type == 'textarea')
+                                        <textarea 
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" rows="3">{{ old($setting->key, $setting->value) }}</textarea>
+                                    @endif
+                                    
+                                    @error($setting->key)
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endforeach
                     </div>
 
                     <!-- Social Media -->
@@ -166,116 +155,114 @@
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Facebook -->
-                            <div>
-                                <label for="facebook_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Facebook URL
-                                </label>
-                                <input type="url" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('facebook_url') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="facebook_url" name="facebook_url" value="{{ old('facebook_url', $settings['facebook_url']) }}">
-                                @error('facebook_url')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Instagram -->
-                            <div>
-                                <label for="instagram_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Instagram URL
-                                </label>
-                                <input type="url" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('instagram_url') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="instagram_url" name="instagram_url" value="{{ old('instagram_url', $settings['instagram_url']) }}">
-                                @error('instagram_url')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Twitter -->
-                            <div>
-                                <label for="twitter_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Twitter URL
-                                </label>
-                                <input type="url" 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('twitter_url') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="twitter_url" name="twitter_url" value="{{ old('twitter_url', $settings['twitter_url']) }}">
-                                @error('twitter_url')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            @foreach($socialSettings as $setting)
+                                <div>
+                                    <label for="{{ $setting->key }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ $setting->label }}
+                                    </label>
+                                    
+                                    <input type="url" 
+                                        class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                        id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ old($setting->key, $setting->value) }}">
+                                    
+                                    @error($setting->key)
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <!-- Appearance Settings -->
+                    <div class="space-y-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                            <i class="fas fa-paint-brush mr-2 text-indigo-500"></i>
+                            Giao diện
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach($appearanceSettings as $setting)
+                                @if($setting->type == 'boolean')
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <div>
+                                            <label for="{{ $setting->key }}" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {{ $setting->label }}
+                                            </label>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $setting->key == 'dark_mode_default' ? 'Mặc định chế độ tối khi truy cập' : '' }}
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="{{ $setting->key }}" name="{{ $setting->key }}" 
+                                                    {{ $setting->value == '1' ? 'checked' : '' }}>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $setting->value == '1' ? 'Đang bật' : 'Đang tắt' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @elseif($setting->type == 'color')
+                                    <div>
+                                        <label for="{{ $setting->key }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            {{ $setting->label }}
+                                        </label>
+                                        <div class="flex items-center">
+                                            <input type="color" 
+                                                class="w-12 h-10 border border-gray-300 dark:border-gray-600 rounded mr-2" 
+                                                id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ old($setting->key, $setting->value) }}">
+                                            <input type="text" 
+                                                class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                                value="{{ old($setting->key, $setting->value) }}" id="{{ $setting->key }}_text">
+                                        </div>
+                                        
+                                        @error($setting->key)
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
 
-                    <!-- System Settings -->
+                    <!-- Store Settings -->
                     <div class="space-y-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                            <i class="fas fa-cogs mr-2 text-orange-500"></i>
-                            Cài đặt hệ thống
+                            <i class="fas fa-store mr-2 text-orange-500"></i>
+                            Cài đặt cửa hàng
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Items per page -->
-                            <div>
-                                <label for="items_per_page" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Số sản phẩm mỗi trang <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" min="5" max="100"
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('items_per_page') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="items_per_page" name="items_per_page" value="{{ old('items_per_page', $settings['items_per_page']) }}" required>
-                                @error('items_per_page')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Timezone -->
-                            <div>
-                                <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Múi giờ <span class="text-red-500">*</span>
-                                </label>
-                                <select 
-                                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200 @error('timezone') !border-red-500 dark:!border-red-500 @enderror" 
-                                    id="timezone" name="timezone" required>
-                                    <option value="Asia/Ho_Chi_Minh" {{ old('timezone', $settings['timezone']) == 'Asia/Ho_Chi_Minh' ? 'selected' : '' }}>Asia/Ho_Chi_Minh</option>
-                                    <option value="Asia/Bangkok" {{ old('timezone', $settings['timezone']) == 'Asia/Bangkok' ? 'selected' : '' }}>Asia/Bangkok</option>
-                                    <option value="UTC" {{ old('timezone', $settings['timezone']) == 'UTC' ? 'selected' : '' }}>UTC</option>
-                                </select>
-                                @error('timezone')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Toggle Settings -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            @foreach($storeSettings as $setting)
                                 <div>
-                                    <label for="maintenance_mode" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Chế độ bảo trì
+                                    <label for="{{ $setting->key }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ $setting->label }} <span class="text-red-500">*</span>
                                     </label>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Tạm khóa website để bảo trì</p>
+                                    
+                                    @if($setting->type == 'select')
+                                        <select 
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" required>
+                                            @if($setting->options)
+                                                @foreach(json_decode($setting->options, true) as $value => $label)
+                                                    <option value="{{ $value }}" {{ old($setting->key, $setting->value) == $value ? 'selected' : '' }}>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    @elseif($setting->type == 'number')
+                                        <input type="number" min="5" max="100"
+                                            class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200" 
+                                            id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ old($setting->key, $setting->value) }}" required>
+                                    @endif
+                                    
+                                    @error($setting->key)
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="maintenance_mode" name="maintenance_mode" value="1" 
-                                        {{ old('maintenance_mode', $settings['maintenance_mode']) ? 'checked' : '' }}
-                                        class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                </label>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <div>
-                                    <label for="allow_registration" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Cho phép đăng ký
-                                    </label>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Cho phép người dùng tạo tài khoản mới</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="allow_registration" name="allow_registration" value="1" 
-                                        {{ old('allow_registration', $settings['allow_registration']) ? 'checked' : '' }}
-                                        class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                </label>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -315,21 +302,35 @@
         }, 5000);
     });
 
-    // Preview settings changes
-    document.getElementById('site_name').addEventListener('input', function() {
-        // Could update a preview here
-        console.log('Site name changed to:', this.value);
+    // Sync color inputs
+    document.querySelectorAll('input[type="color"]').forEach(colorInput => {
+        const textInput = document.getElementById(colorInput.id + '_text');
+        if (textInput) {
+            colorInput.addEventListener('input', () => {
+                textInput.value = colorInput.value;
+            });
+            textInput.addEventListener('input', () => {
+                colorInput.value = textInput.value;
+            });
+        }
     });
-
-    // Validate URLs
-    const urlInputs = ['facebook_url', 'instagram_url', 'twitter_url'];
-    urlInputs.forEach(inputId => {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.addEventListener('blur', function() {
-                if (this.value && !this.value.startsWith('http')) {
-                    this.value = 'https://' + this.value;
-                }
+    
+    // Validate URLs for social settings
+    const urlInputs = document.querySelectorAll('input[type="url"]');
+    urlInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value && !this.value.startsWith('http')) {
+                this.value = 'https://' + this.value;
+            }
+        });
+    });
+    
+    // Toggle switch label updates
+    document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(checkbox => {
+        const statusText = checkbox.parentElement.nextElementSibling;
+        if (statusText) {
+            checkbox.addEventListener('change', function() {
+                statusText.textContent = this.checked ? 'Đang bật' : 'Đang tắt';
             });
         }
     });

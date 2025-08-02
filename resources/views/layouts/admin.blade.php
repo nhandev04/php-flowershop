@@ -236,7 +236,7 @@
                         </button> -->
 
                         <!-- Notifications -->
-                        <div class="relative" x-data="{ open: false }">
+                        <!-- <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
                                 class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-lg transition-colors duration-200">
                                 <i class="fas fa-bell text-xl"></i>
@@ -265,7 +265,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- User dropdown -->
                         <div class="relative" x-data="{ open: false }">

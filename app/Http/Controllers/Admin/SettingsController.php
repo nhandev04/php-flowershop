@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -11,93 +12,75 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $settings = [
-            'site_name' => config('app.name', 'Flower Shop'),
-            'site_description' => config('app.description', 'Cửa hàng hoa tươi đẹp nhất'),
-            'contact_email' => config('mail.from.address', 'admin@flowershop.com'),
-            'contact_phone' => config('app.contact_phone', ''),
-            'address' => config('app.address', ''),
-            'facebook_url' => config('app.facebook_url', ''),
-            'instagram_url' => config('app.instagram_url', ''),
-            'twitter_url' => config('app.twitter_url', ''),
-            'maintenance_mode' => config('app.maintenance_mode', false),
-            'allow_registration' => config('app.allow_registration', true),
-            'items_per_page' => config('app.items_per_page', 12),
-            'currency' => config('app.currency', 'VND'),
-            'timezone' => config('app.timezone', 'Asia/Ho_Chi_Minh'),
-        ];
+        $settings = Setting::all()->groupBy('group');
 
-        return view('admin.settings.index', compact('settings'));
+        // Organize settings for the view
+        $generalSettings = $settings->get('general', collect());
+        $contactSettings = $settings->get('contact', collect());
+        $socialSettings = $settings->get('social', collect());
+        $appearanceSettings = $settings->get('appearance', collect());
+        $storeSettings = $settings->get('store', collect());
+
+        return view('admin.settings.index', compact(
+            'generalSettings',
+            'contactSettings',
+            'socialSettings',
+            'appearanceSettings',
+            'storeSettings'
+        ));
     }
 
     public function update(Request $request)
     {
-        $request->validate([
-            'site_name' => 'required|string|max:255',
-            'site_description' => 'nullable|string|max:500',
-            'contact_email' => 'required|email|max:255',
-            'contact_phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'facebook_url' => 'nullable|url|max:255',
-            'instagram_url' => 'nullable|url|max:255',
-            'twitter_url' => 'nullable|url|max:255',
-            'maintenance_mode' => 'boolean',
-            'allow_registration' => 'boolean',
-            'items_per_page' => 'required|integer|min:5|max:100',
-            'currency' => 'required|string|max:10',
-            'timezone' => 'required|string|max:50',
-        ], [
-            'site_name.required' => 'Tên website là bắt buộc',
-            'contact_email.required' => 'Email liên hệ là bắt buộc',
-            'contact_email.email' => 'Email liên hệ không hợp lệ',
-            'facebook_url.url' => 'URL Facebook không hợp lệ',
-            'instagram_url.url' => 'URL Instagram không hợp lệ',
-            'twitter_url.url' => 'URL Twitter không hợp lệ',
-            'items_per_page.required' => 'Số sản phẩm mỗi trang là bắt buộc',
-            'items_per_page.integer' => 'Số sản phẩm mỗi trang phải là số',
-            'items_per_page.min' => 'Số sản phẩm mỗi trang tối thiểu là 5',
-            'items_per_page.max' => 'Số sản phẩm mỗi trang tối đa là 100',
-            'currency.required' => 'Đơn vị tiền tệ là bắt buộc',
-            'timezone.required' => 'Múi giờ là bắt buộc',
-        ]);
+        $inputs = $request->except('_token', '_method');
 
-        // Store settings in cache for quick access
-        $settings = $request->only([
-            'site_name',
-            'site_description',
-            'contact_email',
-            'contact_phone',
-            'address',
-            'facebook_url',
-            'instagram_url',
-            'twitter_url',
-            'maintenance_mode',
-            'allow_registration',
-            'items_per_page',
-            'currency',
-            'timezone'
-        ]);
+        foreach ($inputs as $key => $value) {
+            // Handle boolean values from checkboxes
+            if (is_string($value) && ($value === 'on' || $value === 'off')) {
+                $value = ($value === 'on') ? '1' : '0';
+            }
 
-        // Convert checkboxes to boolean
-        $settings['maintenance_mode'] = $request->has('maintenance_mode');
-        $settings['allow_registration'] = $request->has('allow_registration');
+            // Get the setting and update it
+            $setting = Setting::where('key', $key)->first();
+            if ($setting) {
+                $setting->value = $value;
+                $setting->save();
 
-        foreach ($settings as $key => $value) {
-            Cache::forever("setting.{$key}", $value);
+                // Update cache
+                Cache::forever("setting.{$key}", $value);
+
+                // Update config for important settings
+                if ($key === 'site_name') {
+                    Config::set('app.name', $value);
+                }
+                if ($key === 'contact_email') {
+                    Config::set('mail.from.address', $value);
+                }
+            }
         }
 
-        // Update app config temporarily (in production, you might want to write to a config file)
-        Config::set('app.name', $settings['site_name']);
-        Config::set('app.description', $settings['site_description']);
-        Config::set('mail.from.address', $settings['contact_email']);
-
-        return redirect()->route('admin.settings.index')->with('success', 'Cài đặt đã được cập nhật thành công!');
+        return redirect()->route('admin.settings')->with('success', 'Cài đặt đã được cập nhật thành công!');
     }
 
     public function clearCache()
     {
         Cache::flush();
 
-        return redirect()->route('admin.settings.index')->with('success', 'Cache đã được xóa thành công!');
+        return redirect()->route('admin.settings')->with('success', 'Cache đã được xóa thành công!');
+    }
+
+    /**
+     * Reset all settings to default values
+     */
+    public function resetToDefaults()
+    {
+        // Run the settings seeder to restore defaults
+        $seeder = new \Database\Seeders\SettingsSeeder();
+        $seeder->run();
+
+        // Clear cache
+        Cache::flush();
+
+        return redirect()->route('admin.settings')->with('success', 'Cài đặt đã được khôi phục về mặc định!');
     }
 }
