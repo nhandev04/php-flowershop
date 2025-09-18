@@ -18,19 +18,26 @@ class AccountController extends Controller
     {
         $user = auth()->user();
 
-        // Get recent orders
-        $recentOrders = Order::where('user_id', $user->id)
+        // Get or create customer for the user
+        $customer = $user->customer ?? \App\Models\Customer::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+
+        // Get recent orders through customer
+        $recentOrders = $customer->orders()
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
         // Get total orders count
-        $totalOrders = Order::where('user_id', $user->id)->count();
+        $totalOrders = $customer->orders()->count();
 
         // Get total spent
-        $totalSpent = Order::where('user_id', $user->id)
+        $totalSpent = $customer->orders()
             ->where('status', '!=', 'cancelled')
-            ->sum('total');
+            ->sum('total_amount');
 
         return view('client.account.dashboard', compact('user', 'recentOrders', 'totalOrders', 'totalSpent'));
     }
@@ -40,7 +47,16 @@ class AccountController extends Controller
      */
     public function orders()
     {
-        $orders = Order::where('user_id', auth()->id())
+        $user = auth()->user();
+
+        // Get or create customer for the user
+        $customer = $user->customer ?? \App\Models\Customer::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+
+        $orders = $customer->orders()
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

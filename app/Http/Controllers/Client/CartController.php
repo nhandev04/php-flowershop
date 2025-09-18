@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -16,32 +15,39 @@ class CartController extends Controller
      */
     public function index()
     {
-        // Get cart items from session
-        $cartItems = $this->getCartItems();
-
-        // Calculate cart totals
+        $cartItems = collect();
         $subtotal = 0;
+
+        if (Auth::check()) {
+            // Logged-in users: get cart items from database
+            $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+            $subtotal = $cartItems->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
+        } else {
+            // Guests: get cart items from session
+            $cart = session()->get('cart', []);
+            $productIds = array_keys($cart);
+            if (!empty($productIds)) {
+                $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+                foreach ($cart as $productId => $item) {
+                    if (isset($products[$productId])) {
+                        $product = clone $products[$productId];
+                        // Explicitly set the quantity on the object that will be used in the view
+                        $product->quantity = $item['quantity'];
+                        $product->id = $productId;
+                        $cartItems->push($product);
+                        $subtotal += $product->price * $product->quantity;
+                    }
+                }
+            }
+        }
+
         $discount = 0;
-        $taxRate = 0.10; // 10% tax
-        $shipping = 0;
-
-        foreach ($cartItems as $item) {
-            $subtotal += $item->product->price * $item->quantity;
-        }
-
-        // Apply coupon discount if exists
-        if (Session::has('coupon_discount')) {
-            $discount = Session::get('coupon_discount');
-        }
-
-        // Calculate tax
-        $tax = ($subtotal - $discount) * $taxRate;
-
-        // Free shipping for orders above $100
-        $shipping = ($subtotal - $discount < 100 && $subtotal > 0) ? 10 : 0;
-
-        // Calculate total
-        $total = $subtotal - $discount + $tax + $shipping;
+        $taxRate = 0.10;
+        $tax = $subtotal * $taxRate;
+        $shipping = ($subtotal > 0) ? 50000 : 0;
+        $total = $subtotal + $tax + $shipping - $discount;
 
         return view('client.cart.index', compact('cartItems', 'subtotal', 'discount', 'tax', 'taxRate', 'shipping', 'total'));
     }
@@ -56,66 +62,123 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->input('product_id'));
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
+        $product = Product::findOrFail($productId);
 
-        // Check if product is in stock
-        if ($product->stock <= 0) {
-            return redirect()->back()->with('error', 'This product is out of stock.');
+        if ($product->stock < $quantity) {
+            return redirect()->back()->with('error', 'Not enough stock for this product.');
         }
 
-        $cart = Session::get('cart', []);
-        $cartId = $request->input('product_id');
+        if (Auth::check()) {
+            // Logged-in users: store in database
+            $cartItem = Cart::where('user_id', Auth::id())
+                ->where('product_id', $productId)
+                ->first();
 
-        // If item already in cart, update quantity
-        if (isset($cart[$cartId])) {
-            $cart[$cartId]['quantity'] += $request->input('quantity');
+            if ($cartItem) {
+                // If item exists, increment the quantity
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+            } else {
+                // If item does not exist, create it
+                Cart::create([
+                    'user_id' => Auth::id(),
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                ]);
+            }
         } else {
-            // Add new item to cart
-            $cart[$cartId] = [
-                'product_id' => $request->input('product_id'),
-                'quantity' => $request->input('quantity'),
-            ];
+            // Guests: store in session
+            $cart = session()->get('cart', []);
+            // Always set the quantity to the new value, or add it if it's not there.
+            // This avoids issues with += on potentially non-existent keys.
+            $currentQuantity = isset($cart[$productId]['quantity']) ? $cart[$productId]['quantity'] : 0;
+            $cart[$productId] = ['quantity' => $currentQuantity + $quantity];
+            session()->put('cart', $cart);
         }
 
-        Session::put('cart', $cart);
+        if ($request->ajax()) {
+            // Return JSON response for AJAX requests
+            $count = $this->getCartCount();
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart!',
+                'count' => $count
+            ]);
+        }
 
-        return redirect()->back()->with('success', 'Product added to cart successfully!');
+        return redirect()->back()->with('success', 'Product added to cart!');
+    }
+
+    /**
+     * Get current cart count
+     */
+    private function getCartCount()
+    {
+        if (Auth::check()) {
+            return Cart::where('user_id', Auth::id())->sum('quantity');
+        } else {
+            $cart = session()->get('cart', []);
+            return array_sum(array_column($cart, 'quantity'));
+        }
     }
 
     /**
      * Update cart item quantity
      */
-    public function update(Request $request, $cartItemId)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = Session::get('cart', []);
+        $quantity = $request->input('quantity');
 
-        if (isset($cart[$cartItemId])) {
-            $cart[$cartItemId]['quantity'] = $request->input('quantity');
-            Session::put('cart', $cart);
-            return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+        if (Auth::check()) {
+            // Logged-in users: update in database
+            $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+            if ($cartItem->product->stock < $quantity) {
+                return redirect()->back()->with('error', 'Not enough stock for this product.');
+            }
+            $cartItem->update(['quantity' => $quantity]);
+        } else {
+            // Guests: update in session (the $id is the product_id)
+            $cart = session()->get('cart', []);
+            $product = Product::find($id);
+            if (!$product) {
+                return redirect()->back()->with('error', 'Product not found.');
+            }
+            if ($product->stock < $quantity) {
+                return redirect()->back()->with('error', 'Not enough stock for this product.');
+            }
+            if (isset($cart[$id])) {
+                $cart[$id]['quantity'] = $quantity;
+                session()->put('cart', $cart);
+            }
         }
 
-        return redirect()->route('cart.index')->with('error', 'Cart item not found!');
+        return redirect()->route('cart.index')->with('success', 'Cart updated successfully.');
     }
 
     /**
      * Remove item from cart
      */
-    public function remove($cartItemId)
+    public function remove($id)
     {
-        $cart = Session::get('cart', []);
-
-        if (isset($cart[$cartItemId])) {
-            unset($cart[$cartItemId]);
-            Session::put('cart', $cart);
-            return redirect()->route('cart.index')->with('success', 'Product removed from cart!');
+        if (Auth::check()) {
+            // Logged-in users: delete from database
+            Cart::where('id', $id)->where('user_id', Auth::id())->delete();
+        } else {
+            // Guests: delete from session (the $id is the product_id)
+            $cart = session()->get('cart', []);
+            if (isset($cart[$id])) {
+                unset($cart[$id]);
+                session()->put('cart', $cart);
+            }
         }
 
-        return redirect()->route('cart.index')->with('error', 'Cart item not found!');
+        return redirect()->route('cart.index')->with('success', 'Product removed from cart.');
     }
 
     /**
@@ -123,8 +186,15 @@ class CartController extends Controller
      */
     public function clear()
     {
-        Session::forget('cart');
-        return redirect()->route('cart.index')->with('success', 'Cart cleared successfully!');
+        if (Auth::check()) {
+            // Logged-in users: delete all cart items from database
+            Cart::where('user_id', Auth::id())->delete();
+        } else {
+            // Guests: clear session cart
+            session()->forget('cart');
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Cart cleared.');
     }
 
     /**
@@ -132,57 +202,60 @@ class CartController extends Controller
      */
     public function applyCoupon(Request $request)
     {
-        $request->validate([
-            'coupon' => 'required|string|max:50',
-        ]);
-
-        $couponCode = strtoupper($request->input('coupon'));
-
-        // Simple coupon codes for demonstration
-        $validCoupons = [
-            'WELCOME10' => 10, // $10 off
-            'SAVE20' => 20,    // $20 off
-            'FLOWER15' => 15,  // $15 off
-        ];
-
-        if (array_key_exists($couponCode, $validCoupons)) {
-            Session::put('coupon_code', $couponCode);
-            Session::put('coupon_discount', $validCoupons[$couponCode]);
-            return redirect()->route('cart.index')->with([
-                'coupon_success' => true,
-                'coupon_message' => "Coupon '{$couponCode}' applied successfully! You saved \${$validCoupons[$couponCode]}."
-            ]);
-        }
-
-        return redirect()->route('cart.index')->with([
-            'coupon_success' => false,
-            'coupon_message' => "Invalid coupon code. Please try again."
-        ]);
+        // Dummy function for coupon
+        return redirect()->back()->with('coupon_message', 'Invalid coupon code.')->with('coupon_success', false);
     }
 
     /**
-     * Get cart items from session with products
+     * Migrate cart from session to database when user logs in
      */
-    private function getCartItems()
+    public static function migrateSessionCartToDatabase($userId)
     {
-        $cart = Session::get('cart', []);
-        $cartItems = collect();
+        $sessionCart = session()->get('cart', []);
 
-        foreach ($cart as $id => $item) {
-            $product = Product::find($item['product_id']);
+        if (empty($sessionCart)) {
+            return;
+        }
 
-            if ($product) {
-                // Convert to object for consistency with models
-                $cartItem = (object) [
-                    'id' => $id,
-                    'product' => $product,
+        foreach ($sessionCart as $productId => $item) {
+            $existingCartItem = Cart::where('user_id', $userId)
+                ->where('product_id', $productId)
+                ->first();
+
+            if ($existingCartItem) {
+                // If item already exists in user's cart, add the session quantity
+                $existingCartItem->quantity += $item['quantity'];
+                $existingCartItem->save();
+            } else {
+                // Create new cart item
+                Cart::create([
+                    'user_id' => $userId,
+                    'product_id' => $productId,
                     'quantity' => $item['quantity'],
-                ];
-
-                $cartItems->push($cartItem);
+                ]);
             }
         }
 
-        return $cartItems;
+        // Clear session cart after migration
+        session()->forget('cart');
+    }
+
+    /**
+     * Get cart count for AJAX requests
+     */
+    public function getCount()
+    {
+        $count = 0;
+
+        if (Auth::check()) {
+            // Logged-in users: count from database
+            $count = Cart::where('user_id', Auth::id())->sum('quantity');
+        } else {
+            // Guests: count from session
+            $cart = session()->get('cart', []);
+            $count = array_sum(array_column($cart, 'quantity'));
+        }
+
+        return response()->json(['count' => $count]);
     }
 }

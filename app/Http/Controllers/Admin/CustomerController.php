@@ -25,7 +25,22 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->latest()->paginate(10);
+        // Sorting
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Validate sort fields
+        $allowedSorts = ['id', 'name', 'email', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+
+        // Validate sort direction
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $customers = $query->orderBy($sortBy, $sortDirection)->paginate(10);
 
         return view('admin.customers.index', compact('customers'));
     }

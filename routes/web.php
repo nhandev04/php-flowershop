@@ -17,41 +17,45 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\WishlistController;
+use App\Http\Controllers\Client\AuthController as ClientAuthController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 // Client Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('client.only');
 
 // Product Routes
-Route::get('/products', [ClientProductController::class, 'index'])->name('products.index');
-Route::get('/products/category/{category}', [ClientProductController::class, 'category'])->name('products.category');
-Route::get('/products/brand/{brand}', [ClientProductController::class, 'brand'])->name('products.brand');
-Route::get('/products/{product}', [ClientProductController::class, 'show'])->name('products.show');
-Route::get('/search', [ClientProductController::class, 'search'])->name('products.search');
+Route::get('/products', [ClientProductController::class, 'index'])->name('products.index')->middleware('client.only');
+Route::get('/products/category/{category}', [ClientProductController::class, 'category'])->name('products.category')->middleware('client.only');
+Route::get('/products/brand/{brand}', [ClientProductController::class, 'brand'])->name('products.brand')->middleware('client.only');
+Route::get('/products/{product}', [ClientProductController::class, 'show'])->name('products.show')->middleware('client.only');
+Route::get('/search', [ClientProductController::class, 'search'])->name('products.search')->middleware('client.only');
 
 // Wishlist Public Route
-Route::get('/wishlist', [WishlistController::class, 'show'])->name('wishlist.show');
+Route::get('/wishlist', [WishlistController::class, 'show'])->name('wishlist.show')->middleware('client.only');
 
 // Cart Routes
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::patch('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.apply-coupon');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index')->middleware('client.only');
+Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.count');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add')->middleware('client.only');
+Route::patch('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update')->middleware('client.only');
+Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove')->middleware('client.only');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')->middleware('client.only');
+Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.apply-coupon')->middleware('client.only');
 
 // Checkout Routes
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout')->middleware('auth');
-Route::post('/orders', [CheckoutController::class, 'store'])->name('orders.store')->middleware('auth');
+// Checkout Routes
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout')->middleware(['client.auth', 'client.only']);
+Route::post('/orders', [CheckoutController::class, 'store'])->name('orders.store')->middleware(['client.auth', 'client.only']);
 
 // Order Routes (Protected by auth middleware)
-Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show')->middleware('auth');
-Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel')->middleware('auth');
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show')->middleware(['client.auth', 'client.only']);
+Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel')->middleware(['client.auth', 'client.only']);
 
 // Account Routes (Protected by auth middleware)
-Route::prefix('account')->middleware(['auth'])->group(function () {
+Route::prefix('account')->middleware(['client.auth', 'client.only'])->group(function () {
     Route::get('/dashboard', [AccountController::class, 'dashboard'])->name('account.dashboard');
     Route::get('/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/profile', [AccountController::class, 'profile'])->name('account.profile');
@@ -64,18 +68,26 @@ Route::prefix('account')->middleware(['auth'])->group(function () {
 });
 
 // Order Confirmation (Public but requires order ID)
-Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
+Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation')->middleware('client.only');
 
 // Auth Routes
-Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/register', [ClientAuthController::class, 'registerForm'])->name('client.register')->middleware('client.only');
+Route::post('/register', [ClientAuthController::class, 'register'])->middleware('client.only');
+
+Route::get('/login', [ClientAuthController::class, 'loginForm'])->name('client.login')->middleware('client.only');
+Route::post('/login', [ClientAuthController::class, 'login'])->middleware('client.only');
+Route::post('/logout', [ClientAuthController::class, 'logout'])->name('client.logout');
+
+// Admin Auth Routes  
+Route::get('/admin/login', [AuthController::class, 'loginForm'])->name('login');
+Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-Route::prefix('ad')->middleware(['auth'])->group(function () {
+Route::prefix('ad')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 

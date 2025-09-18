@@ -5,83 +5,74 @@
 @section('content')
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Chỉnh sửa thương hiệu</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Chỉnh sửa thương hiệu</h1>
             <a href="{{ route('admin.brands.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                class="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
                 <i class="fas fa-arrow-left mr-2"></i> Quay lại danh sách
             </a>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
             <form action="{{ route('admin.brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
-                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Tên thương hiệu *</label>
+                    <label for="name" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2 transition-colors duration-300">Tên thương hiệu *</label>
                     <input type="text" name="name" id="name" value="{{ old('name', $brand->name) }}" required
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror">
+                        class="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 @error('name') border-red-500 dark:border-red-400 @enderror">
                     @error('name')
-                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                        <p class="text-red-500 dark:text-red-400 text-xs italic mt-1 transition-colors duration-300">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mb-4">
-                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Mô tả</label>
+                    <label for="description" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2 transition-colors duration-300">Mô tả</label>
                     <textarea name="description" id="description" rows="4"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('description') border-red-500 @enderror">{{ old('description', $brand->description) }}</textarea>
+                        class="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 @error('description') border-red-500 dark:border-red-400 @enderror">{{ old('description', $brand->description) }}</textarea>
                     @error('description')
-                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                        <p class="text-red-500 dark:text-red-400 text-xs italic mt-1 transition-colors duration-300">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mb-4">
-                    <label for="website" class="block text-gray-700 text-sm font-bold mb-2">Địa chỉ website</label>
+                    <label for="website" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2 transition-colors duration-300">Địa chỉ website</label>
                     <input type="url" name="website" id="website" value="{{ old('website', $brand->website) }}"
                         placeholder="https://example.com"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('website') border-red-500 @enderror">
+                        class="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 @error('website') border-red-500 dark:border-red-400 @enderror">
                     @error('website')
-                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                        <p class="text-red-500 dark:text-red-400 text-xs italic mt-1 transition-colors duration-300">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mb-4">
-                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Hình ảnh</label>
+                    <label for="image" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2 transition-colors duration-300">Hình ảnh</label>
                     @if($brand->image)
                         <div class="mb-2">
                             <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
-                                class="h-24 w-24 object-cover rounded">
+                                class="h-24 w-24 object-cover rounded border-2 border-gray-200 dark:border-gray-600 transition-colors duration-300">
                         </div>
                     @endif
-                    <input type="file" name="image" id="image" class="w-full py-2 @error('image') border-red-500 @enderror">
-                    <p class="text-gray-500 text-xs mt-1">Để trống nếu muốn giữ hình ảnh hiện tại</p>
+                    <input type="file" name="image" id="image" class="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 dark:file:bg-gray-600 dark:file:text-gray-300 dark:hover:file:bg-gray-500 @error('image') border-red-500 dark:border-red-400 @enderror">
+                    <p class="text-gray-500 dark:text-gray-400 text-xs mt-1 transition-colors duration-300">Để trống nếu muốn giữ hình ảnh hiện tại</p>
                     @error('image')
-                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                        <p class="text-red-500 dark:text-red-400 text-xs italic mt-1 transition-colors duration-300">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mb-6">
                     <div class="flex items-center">
-                        <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $brand->is_active) ? 'checked' : '' }} class="mr-2">
-                        <label for="status" class="flex items-center cursor-pointer">
-                            <div class="relative">
-                                <input type="checkbox" id="status" name="status" class="sr-only" {{ $brand->status ? 'checked' : '' }}>
-                                <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
-                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
-                            </div>
-                            <div class="ml-3 text-gray-700 font-medium">
-                                Hoạt động
-                            </div>
-                        </label>
+                        <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $brand->is_active) ? 'checked' : '' }} class="mr-2 h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors duration-300">
+                        <label for="is_active" class="text-gray-700 dark:text-gray-300 text-sm font-bold transition-colors duration-300">Kích hoạt</label>
                     </div>
                     @error('is_active')
-                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                        <p class="text-red-500 dark:text-red-400 text-xs italic mt-1 transition-colors duration-300">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="flex items-center justify-between">
                     <button type="submit"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition-colors duration-300">
                         Cập nhật thương hiệu
                     </button>
                 </div>

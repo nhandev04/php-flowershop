@@ -3,23 +3,23 @@
 @section('title', ' - Danh sách yêu thích của tôi')
 
 @section('content')
-    <div class="bg-gray-100 py-6">
+    <div class="bg-gray-100 dark:bg-gray-800 py-6 transition-colors duration-300">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold mb-2">Danh sách yêu thích</h1>
-            <nav class="text-sm text-gray-500">
+            <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Danh sách yêu thích</h1>
+            <nav class="text-sm text-gray-500 dark:text-gray-400">
                 <ol class="list-none p-0 flex flex-wrap">
-                    <li><a href="{{ route('home') }}" class="hover:text-pink-600">Trang chủ</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:text-pink-600 dark:hover:text-pink-400">Trang chủ</a></li>
                     <li class="mx-2">/</li>
-                    <li class="text-pink-600">Yêu thích</li>
+                    <li class="text-pink-600 dark:text-pink-400">Yêu thích</li>
                 </ol>
             </nav>
         </div>
     </div>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-800">Sản phẩm yêu thích</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden transition-colors duration-300">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white">Sản phẩm yêu thích</h2>
             </div>
 
             @if($wishlistItems->count() > 0)
@@ -34,8 +34,8 @@
                                             class="w-full h-48 object-cover">
                                     </a>
                                 @else
-                                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                    <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400 dark:text-gray-500 text-3xl"></i>
                                     </div>
                                 @endif
 
@@ -43,7 +43,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors duration-300"
+                                        class="bg-white dark:bg-gray-700 rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
                                         title="Xóa khỏi danh sách yêu thích">
                                         <i class="fas fa-heart text-red-500"></i>
                                     </button>
@@ -53,16 +53,16 @@
                             <div class="p-4">
                                 @if($item->product)
                                     <a href="{{ route('products.show', $item->product) }}" class="block">
-                                        <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $item->product->name }}</h3>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ $item->product->name }}</h3>
                                     </a>
                                     <div class="flex justify-between items-center mb-2">
                                         <span
-                                            class="text-lg font-bold text-pink-600">{{ number_format($item->product->price, 0, ',', '.') }}₫</span>
+                                            class="text-lg font-bold text-pink-600 dark:text-pink-400">{{ number_format($item->product->price, 0, ',', '.') }}₫</span>
                                         <div>
                                             @if($item->product->stock > 0)
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Còn hàng</span>
+                                                <span class="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 text-xs rounded-full">Còn hàng</span>
                                             @else
-                                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Hết hàng</span>
+                                                <span class="px-2 py-1 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 text-xs rounded-full">Hết hàng</span>
                                             @endif
                                         </div>
                                     </div>
@@ -77,7 +77,7 @@
                                         </button>
                                     </form>
                                 @else
-                                    <p class="text-gray-500">Sản phẩm không còn tồn tại</p>
+                                    <p class="text-gray-500 dark:text-gray-400">Sản phẩm không còn tồn tại</p>
                                 @endif
                             </div>
                         </div>
@@ -85,13 +85,13 @@
                 </div>
             @else
                 <div class="p-8 text-center">
-                    <div class="text-gray-400 mb-4">
+                    <div class="text-gray-400 dark:text-gray-500 mb-4">
                         <i class="fas fa-heart text-6xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">Danh sách yêu thích của bạn đang trống</h3>
-                    <p class="text-gray-500 mb-6">Bạn chưa có sản phẩm nào trong danh sách yêu thích.</p>
+                    <h3 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">Danh sách yêu thích của bạn đang trống</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6">Bạn chưa có sản phẩm nào trong danh sách yêu thích.</p>
                     <a href="{{ route('products.index') }}"
-                        class="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-md transition duration-300">
+                        class="inline-block bg-pink-600 dark:bg-pink-700 hover:bg-pink-700 dark:hover:bg-pink-800 text-white py-2 px-6 rounded-md transition duration-300">
                         Mua sắm ngay
                     </a>
                 </div>

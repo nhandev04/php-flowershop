@@ -13,10 +13,28 @@ class OrderController extends Controller
      */
     public function confirmation(Order $order)
     {
-        // Check if the order belongs to the current user
-        if ($order->user_id !== auth()->id() && !auth()->user()->is_admin) {
-            abort(403);
+        // Check if the order belongs to the current user through customer relationship
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // Get or create customer for the user
+            $customer = $user->customer ?? \App\Models\Customer::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => '',
+                'address' => '',
+            ]);
+
+            if ($order->customer_id !== $customer->id) {
+                return redirect()->route('home')->with('error', 'Order not found or you do not have permission to view it.');
+            }
+        } else {
+            // For guests, require login
+            return redirect()->route('client.login')->with('error', 'Please login to view order confirmation.');
         }
+
+        $order->load(['customer', 'orderItems.product']);
 
         return view('client.orders.confirmation', compact('order'));
     }
@@ -26,12 +44,17 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // Check if the order belongs to the current user
-        if ($order->user_id !== auth()->id() && !auth()->user()->is_admin) {
-            abort(403);
+        // Check if the order belongs to the current user through customer relationship
+        if (auth()->check()) {
+            $customer = auth()->user()->customer;
+            if (!$customer || $order->customer_id !== $customer->id) {
+                abort(403);
+            }
+        } else {
+            return redirect()->route('client.login');
         }
 
-        $order->load('items.product');
+        $order->load(['customer', 'orderItems.product']);
 
         return view('client.orders.show', compact('order'));
     }
@@ -41,9 +64,14 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, Order $order)
     {
-        // Check if the order belongs to the current user
-        if ($order->user_id !== auth()->id()) {
-            abort(403);
+        // Check if the order belongs to the current user through customer relationship
+        if (auth()->check()) {
+            $customer = auth()->user()->customer;
+            if (!$customer || $order->customer_id !== $customer->id) {
+                abort(403);
+            }
+        } else {
+            return redirect()->route('client.login');
         }
 
         // Only allow cancelling orders that are in pending or processing status

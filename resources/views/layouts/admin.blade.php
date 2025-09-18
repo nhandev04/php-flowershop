@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ 
-        darkMode: localStorage.getItem('darkMode') === 'true' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), 
-        sidebarOpen: false 
+<html lang="en" x-data="{
+        darkMode: localStorage.getItem('darkMode') === 'true' || (localStorage.getItem('darkMode') === null && {{ $settings['dark_mode_default'] ? 'true' : 'false' }}),
+        sidebarOpen: false
     }" x-init="
         $watch('darkMode', val => {
             localStorage.setItem('darkMode', val);
@@ -11,17 +11,37 @@
                 document.documentElement.classList.remove('dark');
             }
         });
+        // Ensure dark mode is applied on init
         if (darkMode) {
             document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
-    " x-bind:class="darkMode ? 'dark' : ''" <head>
+    " x-bind:class="darkMode ? 'dark' : ''">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quản trị - Cửa hàng Hoa @yield('title')</title>
-@vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/dark-mode.css', 'resources/js/app.js'])
+<title>Quản trị - {{ $settings['site_name'] ?? 'Flower Shop' }} @yield('title')</title>
+@vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/app.js'])
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<!-- Dark mode initialization script -->
+<script>
+// Initialize dark mode before Alpine.js loads
+(function() {
+    const isDarkModeDefault = {{ $settings['dark_mode_default'] ? 'true' : 'false' }};
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const isDarkMode = savedDarkMode === 'true' || (savedDarkMode === null && isDarkModeDefault);
+
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+})();
+</script>
 <style>
     .sidebar-transition {
         transition: all 0.3s ease-in-out;
@@ -117,7 +137,7 @@
                             <i class="fas fa-seedling text-white text-xl"></i>
                         </div>
                         <div>
-                            <h1 class="text-lg font-bold">Flower Shop</h1>
+                            <h1 class="text-lg font-bold">{{ $settings['site_name'] ?? 'Flower Shop' }}</h1>
                             <p class="text-xs text-pink-200">Admin Panel</p>
                         </div>
                     </div>
@@ -216,24 +236,17 @@
 
 
                         <!-- Dark mode toggle -->
-                        <!-- <button @click="darkMode = !darkMode"
+                        <button @click="
+                            darkMode = !darkMode;
+                            console.log('Toggle clicked, darkMode now:', darkMode);
+                            console.log('Document has dark class:', document.documentElement.classList.contains('dark'));
+                        "
                             class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-lg transition-colors duration-200 relative"
                             title="Chuyển đổi chế độ tối">
                             <i x-show="!darkMode" class="fas fa-moon text-lg"></i>
                             <i x-show="darkMode" class="fas fa-sun text-lg text-yellow-400"></i>
                             <span class="sr-only">Chuyển đổi chế độ tối</span>
-                            <span x-show="darkMode" x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 scale-0"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-300"
-                                x-transition:leave-start="opacity-100 scale-100"
-                                x-transition:leave-end="opacity-0 scale-0"
-                                class="absolute -top-1 -right-1 flex h-3 w-3">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
-                            </span>
-                        </button> -->
+                        </button>
 
                         <!-- Notifications -->
                         <!-- <div class="relative" x-data="{ open: false }">
@@ -360,24 +373,12 @@
                 });
             });
 
-            // Initialize dark mode from localStorage or system preference
-            const isDarkMode = localStorage.getItem('darkMode') === 'true' ||
-                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-            if (isDarkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-
-            // Update Alpine.js state
-            if (typeof Alpine !== 'undefined') {
-                document.querySelectorAll('[x-data]').forEach(el => {
-                    if (el.__x) {
-                        el.__x.getUnobservedData().darkMode = isDarkMode;
-                    }
-                });
-            }
+            // Debug dark mode
+            console.log('Dark mode debug:', {
+                localStorage: localStorage.getItem('darkMode'),
+                hasClass: document.documentElement.classList.contains('dark'),
+                defaultSetting: {{ $settings['dark_mode_default'] ? 'true' : 'false' }}
+            });
 
             // Add support for image display in tables and cards
             const allImages = document.querySelectorAll('img:not([data-no-error-handler])');

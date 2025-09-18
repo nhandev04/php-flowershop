@@ -12,9 +12,44 @@ class BannerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $banners = Banner::orderBy('sort_order')->paginate(10);
+        $query = Banner::query();
+
+        // Search functionality
+        if ($request->has('search') && $request->input('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->input('status') !== '') {
+            if ($request->input('status') === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->input('status') === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort', 'sort_order');
+        $sortDirection = $request->get('direction', 'asc');
+
+        // Validate sort fields
+        $allowedSorts = ['id', 'title', 'is_active', 'sort_order', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'sort_order';
+        }
+
+        // Validate sort direction
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $banners = $query->orderBy($sortBy, $sortDirection)->paginate(10);
         return view('admin.banners.index', compact('banners'));
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Helpers\SettingsHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -36,7 +37,9 @@ class SettingsController extends Controller
 
         foreach ($inputs as $key => $value) {
             // Handle boolean values from checkboxes
-            if (is_string($value) && ($value === 'on' || $value === 'off')) {
+            if (is_null($value)) {
+                $value = '0'; // Checkbox not checked
+            } elseif (is_string($value) && ($value === 'on' || $value === 'off')) {
                 $value = ($value === 'on') ? '1' : '0';
             }
 
@@ -46,15 +49,40 @@ class SettingsController extends Controller
                 $setting->value = $value;
                 $setting->save();
 
-                // Update cache
-                Cache::forever("setting.{$key}", $value);
+                // Update cache using helper
+                Cache::put("setting.{$key}", $value, 60 * 60 * 24);
 
                 // Update config for important settings
-                if ($key === 'site_name') {
-                    Config::set('app.name', $value);
+                switch ($key) {
+                    case 'site_name':
+                        Config::set('app.name', $value);
+                        break;
+                    case 'contact_email':
+                        Config::set('mail.from.address', $value);
+                        Config::set('mail.from.name', $value);
+                        break;
+                    case 'timezone':
+                        Config::set('app.timezone', $value);
+                        break;
+                    case 'items_per_page':
+                        Config::set('app.items_per_page', (int) $value);
+                        break;
+                    case 'currency':
+                        Config::set('app.currency', $value);
+                        break;
                 }
-                if ($key === 'contact_email') {
-                    Config::set('mail.from.address', $value);
+            }
+        }
+
+        // Handle unchecked checkboxes (they don't get submitted)
+        $booleanSettings = Setting::where('type', 'boolean')->pluck('key');
+        foreach ($booleanSettings as $key) {
+            if (!array_key_exists($key, $inputs)) {
+                $setting = Setting::where('key', $key)->first();
+                if ($setting) {
+                    $setting->value = '0';
+                    $setting->save();
+                    Cache::put("setting.{$key}", '0', 60 * 60 * 24);
                 }
             }
         }
@@ -64,7 +92,7 @@ class SettingsController extends Controller
 
     public function clearCache()
     {
-        Cache::flush();
+        SettingsHelper::clearCache();
 
         return redirect()->route('admin.settings')->with('success', 'Cache đã được xóa thành công!');
     }

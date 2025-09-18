@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Client\CartController;
 
 class AuthController extends Controller
 {
@@ -23,6 +24,16 @@ class AuthController extends Controller
         ]);
 
         if (auth()->attempt($credentials)) {
+            $user = auth()->user();
+
+            // Check if user is admin
+            if ($user->role !== 'admin') {
+                auth()->logout();
+                return back()->withErrors([
+                    'email' => 'You do not have admin access.',
+                ]);
+            }
+
             $request->session()->regenerate();
 
             return redirect()->intended(route('admin.dashboard'));

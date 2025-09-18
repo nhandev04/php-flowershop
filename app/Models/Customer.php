@@ -9,6 +9,7 @@ class Customer extends Model
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name',
         'phone',
         'email',
@@ -21,5 +22,13 @@ class Customer extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the user that owns the customer.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

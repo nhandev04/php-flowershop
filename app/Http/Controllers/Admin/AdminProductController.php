@@ -23,6 +23,7 @@ class AdminProductController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhereHas('category', function ($subQ) use ($search) {
                         $subQ->where('name', 'like', "%{$search}%");
@@ -34,8 +35,8 @@ class AdminProductController extends Controller
         }
 
         // Filter by category
-        if ($request->has('category_id') && $request->input('category_id')) {
-            $query->where('category_id', $request->input('category_id'));
+        if ($request->has('category') && $request->input('category')) {
+            $query->where('category_id', $request->input('category'));
         }
 
         // Filter by brand
@@ -45,7 +46,11 @@ class AdminProductController extends Controller
 
         // Filter by status
         if ($request->has('status') && $request->input('status') !== '') {
-            $query->where('is_active', $request->input('status'));
+            if ($request->input('status') === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->input('status') === 'inactive') {
+                $query->where('is_active', false);
+            }
         }
 
         // Filter by featured
@@ -69,8 +74,19 @@ class AdminProductController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortDirection = $request->get('sort_direction', 'desc');
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Validate sort fields
+        $allowedSorts = ['id', 'name', 'price', 'stock', 'is_active', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+
+        // Validate sort direction
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
 
         $query->orderBy($sortBy, $sortDirection);
 
