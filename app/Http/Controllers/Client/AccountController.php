@@ -23,6 +23,8 @@ class AccountController extends Controller
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'phone' => 'N/A',
+            'address' => 'N/A',
         ]);
 
         // Get recent orders through customer
@@ -54,6 +56,8 @@ class AccountController extends Controller
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'phone' => 'N/A',
+            'address' => 'N/A',
         ]);
 
         $orders = $customer->orders()

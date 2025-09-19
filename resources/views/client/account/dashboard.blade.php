@@ -54,7 +54,8 @@
                             <div class="ml-4">
                                 <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng chi tiêu</h3>
                                 <p class="text-2xl font-bold text-gray-800 dark:text-white">
-                                    {{ number_format($totalSpent, 0) }}₫</p>
+                                    {{ number_format($totalSpent, 0) }}₫
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -116,18 +117,18 @@
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span
-                                                    class="text-sm font-medium text-gray-900 dark:text-white">#{{ $order->order_number }}</span>
+                                                    class="text-sm font-medium text-gray-900 dark:text-white">#{{ $order->id }}</span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $order->created_at->format('M d, Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                    {{ $order->status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400' : '' }}
-                                                                    {{ $order->status === 'processing' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400' : '' }}
-                                                                    {{ $order->status === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' : '' }}
-                                                                    {{ $order->status === 'cancelled' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400' : '' }}
-                                                                ">
+                                                                                {{ $order->status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400' : '' }}
+                                                                                {{ $order->status === 'processing' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400' : '' }}
+                                                                                {{ $order->status === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' : '' }}
+                                                                                {{ $order->status === 'cancelled' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400' : '' }}
+                                                                            ">
                                                     {{ ucfirst($order->status) }}
                                                 </span>
                                             </td>

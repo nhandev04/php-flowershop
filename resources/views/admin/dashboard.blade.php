@@ -30,8 +30,8 @@
                 <div class="ml-4 flex-1">
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng số sản phẩm</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $totalProducts }}</h3>
-                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i>12% so với tháng trước
+                    <p class="text-xs {{ $productGrowthPercentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }} mt-1">
+                        <i class="fas fa-arrow-{{ $productGrowthPercentage >= 0 ? 'up' : 'down' }} mr-1"></i>{{ abs($productGrowthPercentage) }}% so với tháng trước
                     </p>
                 </div>
             </div>
@@ -45,8 +45,8 @@
                 <div class="ml-4 flex-1">
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Đơn hàng mới</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $latestOrders->count() }}</h3>
-                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i>8% so với tuần trước
+                    <p class="text-xs {{ $orderGrowthPercentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }} mt-1">
+                        <i class="fas fa-arrow-{{ $orderGrowthPercentage >= 0 ? 'up' : 'down' }} mr-1"></i>{{ abs($orderGrowthPercentage) }}% so với tuần trước
                     </p>
                 </div>
             </div>
@@ -60,8 +60,8 @@
                 <div class="ml-4 flex-1">
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng số khách hàng</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $totalCustomers }}</h3>
-                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i>15% so với tháng trước
+                    <p class="text-xs {{ $customerGrowthPercentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }} mt-1">
+                        <i class="fas fa-arrow-{{ $customerGrowthPercentage >= 0 ? 'up' : 'down' }} mr-1"></i>{{ abs($customerGrowthPercentage) }}% so với tháng trước
                     </p>
                 </div>
             </div>
@@ -107,9 +107,9 @@
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Doanh thu hôm nay</h3>
                     <i class="fas fa-dollar-sign text-green-500"></i>
                 </div>
-                <div class="text-3xl font-bold text-gray-900 dark:text-white mb-2">2,450,000₫</div>
-                <p class="text-sm text-green-600 dark:text-green-400">
-                    <i class="fas fa-arrow-up mr-1"></i>18% so với hôm qua
+                <div class="text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ number_format($revenueToday, 0) }}₫</div>
+                <p class="text-sm {{ $revenueGrowthPercentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                    <i class="fas fa-arrow-{{ $revenueGrowthPercentage >= 0 ? 'up' : 'down' }} mr-1"></i>{{ abs($revenueGrowthPercentage) }}% so với hôm qua
                 </p>
             </div>
 
@@ -304,10 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const salesChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            labels: @json($salesChart['labels']),
             datasets: [{
                 label: 'Doanh thu',
-                data: [1200000, 1900000, 800000, 2100000, 1600000, 2450000, 1800000],
+                data: @json($salesChart['data']),
                 borderColor: 'rgb(236, 72, 153)',
                 backgroundColor: 'rgba(236, 72, 153, 0.1)',
                 borderWidth: 3,

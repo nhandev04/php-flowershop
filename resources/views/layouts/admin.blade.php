@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" x-data="{
-        darkMode: localStorage.getItem('darkMode') === 'true' || (localStorage.getItem('darkMode') === null && {{ $settings['dark_mode_default'] ? 'true' : 'false' }}),
-        sidebarOpen: false
-    }" x-init="
-        $watch('darkMode', val => {
-            localStorage.setItem('darkMode', val);
-            if (val) {
+        darkMode: false,
+        sidebarOpen: false,
+        initDarkMode() {
+            const saved = localStorage.getItem('darkMode');
+            const defaultMode = {{ $settings['dark_mode_default'] ? 'true' : 'false' }};
+            this.darkMode = saved === 'true' || (saved === null && defaultMode);
+            this.applyDarkMode();
+        },
+        applyDarkMode() {
+            if (this.darkMode) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
-        });
-        // Ensure dark mode is applied on init
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+            localStorage.setItem('darkMode', this.darkMode);
         }
-    " x-bind:class="darkMode ? 'dark' : ''">
+    }" x-init="
+        initDarkMode();
+        $watch('darkMode', () => applyDarkMode());
+    " :class="darkMode ? 'dark' : ''">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>Quản trị - {{ $settings['site_name'] ?? 'Flower Shop' }} @yield('title')</title>
 @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/app.js'])
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -111,7 +114,55 @@
     input:checked+.slider:before {
         transform: translateX(26px);
     }
-</style>
+
+    /* Prevent dropdown flickering */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Smooth dropdown animations */
+    .dropdown-enter {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    .dropdown-enter-active {
+        transition: opacity 200ms ease-out, transform 200ms ease-out;
+    }
+
+    .dropdown-enter-to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .dropdown-leave {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .dropdown-leave-active {
+        transition: opacity 150ms ease-in, transform 150ms ease-in;
+    }
+
+    .dropdown-leave-to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    /* Prevent layout shift */
+    .user-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .user-dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 50;
+        margin-top: 0.5rem;
+        min-width: 12rem;
+    }
 </style>
 </head>
 
@@ -236,16 +287,28 @@
 
 
                         <!-- Dark mode toggle -->
-                        <button @click="
-                            darkMode = !darkMode;
-                            console.log('Toggle clicked, darkMode now:', darkMode);
-                            console.log('Document has dark class:', document.documentElement.classList.contains('dark'));
-                        "
-                            class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-lg transition-colors duration-200 relative"
-                            title="Chuyển đổi chế độ tối">
-                            <i x-show="!darkMode" class="fas fa-moon text-lg"></i>
-                            <i x-show="darkMode" class="fas fa-sun text-lg text-yellow-400"></i>
-                            <span class="sr-only">Chuyển đổi chế độ tối</span>
+                        <button @click="darkMode = !darkMode"
+                            class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-lg transition-all duration-200 relative"
+                            title="Chuyển đổi chế độ tối"
+                            :aria-label="darkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'">
+                            <div class="relative w-6 h-6 flex items-center justify-center">
+                                <i x-show="!darkMode"
+                                   x-transition:enter="transition-opacity ease-in duration-200"
+                                   x-transition:enter-start="opacity-0"
+                                   x-transition:enter-end="opacity-100"
+                                   x-transition:leave="transition-opacity ease-out duration-200"
+                                   x-transition:leave-start="opacity-100"
+                                   x-transition:leave-end="opacity-0"
+                                   class="fas fa-moon text-lg absolute"></i>
+                                <i x-show="darkMode"
+                                   x-transition:enter="transition-opacity ease-in duration-200"
+                                   x-transition:enter-start="opacity-0"
+                                   x-transition:enter-end="opacity-100"
+                                   x-transition:leave="transition-opacity ease-out duration-200"
+                                   x-transition:leave-start="opacity-100"
+                                   x-transition:leave-end="opacity-0"
+                                   class="fas fa-sun text-lg text-yellow-400 absolute"></i>
+                            </div>
                         </button>
 
                         <!-- Notifications -->
@@ -281,45 +344,64 @@
                         </div> -->
 
                         <!-- User dropdown -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open"
-                                class="flex items-center space-x-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-3 py-2 transition-colors duration-200">
-                                <div
-                                    class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                                    <span
-                                        class="text-white text-sm font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                        <div class="relative" x-data="{
+                            open: false,
+                            toggle() {
+                                this.open = !this.open;
+                            },
+                            close() {
+                                this.open = false;
+                            }
+                        }" @keydown.escape="close()" @click.away="close()">
+                            <button @click="toggle()"
+                                class="flex items-center space-x-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-3 py-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+                                :aria-expanded="open"
+                                aria-haspopup="true">
+                                <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
                                 </div>
                                 <div class="hidden md:block text-left">
                                     <p class="text-sm font-medium">{{ auth()->user()->name }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ auth()->user()->role }}</p>
                                 </div>
-                                <i class="fas fa-chevron-down text-xs"></i>
+                                <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
                             </button>
 
-                            <div x-show="open" @click.away="open = false"
-                                x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="transform opacity-0 scale-95"
-                                x-transition:enter-end="transform opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="transform opacity-100 scale-100"
-                                x-transition:leave-end="transform opacity-0 scale-95"
-                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div x-show="open"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 translate-y-1"
+                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                                style="display: none;"
+                                role="menu"
+                                aria-orientation="vertical">
                                 <div class="py-2">
                                     <a href="{{ route('admin.profile') }}"
-                                        class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                                        @click="close()"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
+                                        role="menuitem">
                                         <i class="fas fa-user mr-2"></i>
                                         Hồ sơ cá nhân
                                     </a>
                                     <a href="{{ route('admin.settings') }}"
-                                        class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                                        @click="close()"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
+                                        role="menuitem">
                                         <i class="fas fa-cog mr-2"></i>
                                         Cài đặt
                                     </a>
                                     <hr class="my-2 border-gray-200 dark:border-gray-700">
-                                    <form action="{{ route('logout') }}" method="POST">
+                                    <form action="{{ route('logout') }}" method="POST" class="w-full">
                                         @csrf
                                         <button type="submit"
-                                            class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors duration-200">
+                                            @click="close()"
+                                            onclick="return confirm('Bạn có chắc muốn đăng xuất không?')"
+                                            class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
+                                            role="menuitem">
                                             <i class="fas fa-sign-out-alt mr-2"></i>
                                             Đăng xuất
                                         </button>
@@ -373,12 +455,12 @@
                 });
             });
 
-            // Debug dark mode
-            console.log('Dark mode debug:', {
-                localStorage: localStorage.getItem('darkMode'),
-                hasClass: document.documentElement.classList.contains('dark'),
-                defaultSetting: {{ $settings['dark_mode_default'] ? 'true' : 'false' }}
-            });
+            // Initialize dark mode state
+            if (typeof Alpine !== 'undefined') {
+                Alpine.data('darkModeState', () => ({
+                    darkMode: Alpine.store('darkMode') || false
+                }));
+            }
 
             // Add support for image display in tables and cards
             const allImages = document.querySelectorAll('img:not([data-no-error-handler])');

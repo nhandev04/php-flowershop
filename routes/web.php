@@ -195,3 +195,18 @@ Route::prefix('ad')->middleware(['auth', 'admin'])->group(function () {
     Route::post('settings/clear-cache', [SettingsController::class, 'clearCache'])->name('admin.settings.clear-cache');
     Route::post('settings/reset', [SettingsController::class, 'resetToDefaults'])->name('admin.settings.reset');
 });
+
+// API Routes for Statistics
+Route::prefix('api')->name('api.')->group(function () {
+    Route::prefix('statistics')->name('statistics.')->group(function () {
+        Route::get('basic-counts', [App\Http\Controllers\Api\StatisticsController::class, 'getBasicCounts'])->name('basic-counts');
+        Route::get('orders', [App\Http\Controllers\Api\StatisticsController::class, 'getOrderStatistics'])->name('orders');
+        Route::get('revenue', [App\Http\Controllers\Api\StatisticsController::class, 'getRevenueStatistics'])->name('revenue');
+        Route::get('customers', [App\Http\Controllers\Api\StatisticsController::class, 'getCustomerGrowthStatistics'])->name('customers');
+        Route::get('products', [App\Http\Controllers\Api\StatisticsController::class, 'getProductStatistics'])->name('products');
+        Route::get('sales-chart', [App\Http\Controllers\Api\StatisticsController::class, 'getSalesChartData'])->name('sales-chart');
+        Route::get('top-selling', [App\Http\Controllers\Api\StatisticsController::class, 'getTopSellingProducts'])->name('top-selling');
+        Route::get('dashboard-data', [App\Http\Controllers\Api\StatisticsController::class, 'getDashboardData'])->name('dashboard-data');
+        Route::get('recent-data', [App\Http\Controllers\Api\StatisticsController::class, 'getRecentData'])->name('recent-data');
+    });
+});

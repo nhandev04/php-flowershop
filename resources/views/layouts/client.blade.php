@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" x-data="{
-        darkMode: localStorage.getItem('darkMode') === 'true' || (localStorage.getItem('darkMode') === null && {{ $settings['dark_mode_default'] ? 'true' : 'false' }})
-    }" x-init="
-        $watch('darkMode', val => {
-            localStorage.setItem('darkMode', val);
-            if (val) {
+        darkMode: false,
+        initDarkMode() {
+            const saved = localStorage.getItem('darkMode');
+            const defaultMode = {{ $settings['dark_mode_default'] ? 'true' : 'false' }};
+            this.darkMode = saved === 'true' || (saved === null && defaultMode);
+            this.applyDarkMode();
+        },
+        applyDarkMode() {
+            if (this.darkMode) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
-        });
-        // Ensure dark mode is applied on init
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+            localStorage.setItem('darkMode', this.darkMode);
         }
-    " x-bind:class="darkMode ? 'dark' : ''">
+    }" x-init="
+        initDarkMode();
+        $watch('darkMode', () => applyDarkMode());
+    " :class="darkMode ? 'dark' : ''">
 
 <head>
     <meta charset="UTF-8">
@@ -47,24 +49,29 @@
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <header class="bg-pink-600 dark:bg-pink-800 text-white shadow-md transition-colors duration-300">
         <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center flex-shrink-0">
                     <a href="{{ route('home') }}" class="text-2xl font-bold flex items-center">
                         <i class="fas fa-flower fa-lg mr-2"></i>
                         {{ $settings['site_name'] ?? 'Flower Shop' }}
                     </a>
                 </div>
 
-                <nav class="hidden md:flex space-x-6">
-                    <a href="{{ route('home') }}" class="hover:text-pink-200">Trang chủ</a>
-                    <a href="{{ route('products.index') }}" class="hover:text-pink-200">Tất cả hoa</a>
+                <nav class="hidden lg:flex space-x-4 flex-wrap">
+                    <a href="{{ route('home') }}" class="hover:text-pink-200 whitespace-nowrap">Trang chủ</a>
+                    <a href="{{ route('products.index') }}" class="hover:text-pink-200 whitespace-nowrap">Tất cả hoa</a>
                     @foreach(App\Models\Category::where('is_active', true)->take(4)->get() as $category)
                         <a href="{{ route('products.category', $category) }}"
-                            class="hover:text-pink-200">{{ $category->name }}</a>
+                            class="hover:text-pink-200 whitespace-nowrap">{{ $category->name }}</a>
                     @endforeach
                 </nav>
 
-                <div class="flex items-center space-x-4">
+                <!-- Mobile menu button -->
+                <button class="lg:hidden p-2 text-white hover:text-pink-200" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <div class="flex items-center space-x-2 flex-wrap gap-2">
                     <form action="/products" method="GET" class="hidden md:flex">
                         <input type="text" name="search" placeholder="Tìm kiếm hoa..."
                             class="px-3 py-1 text-black dark:text-white dark:bg-gray-700 dark:border-gray-600 rounded-l-md focus:outline-none">
@@ -75,14 +82,28 @@
                     </form>
 
                     <!-- Dark mode toggle -->
-                    <button @click="
-                        darkMode = !darkMode;
-                        console.log('Client toggle clicked, darkMode now:', darkMode);
-                        console.log('Document has dark class:', document.documentElement.classList.contains('dark'));
-                    " class="p-2 text-white hover:text-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded-lg transition-colors duration-200"
-                        title="Chuyển đổi chế độ tối">
-                        <i x-show="!darkMode" class="fas fa-moon text-lg"></i>
-                        <i x-show="darkMode" class="fas fa-sun text-lg"></i>
+                    <button @click="darkMode = !darkMode"
+                        class="p-2 text-white hover:text-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded-lg transition-all duration-200"
+                        title="Chuyển đổi chế độ tối"
+                        :aria-label="darkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'">
+                        <div class="relative w-6 h-6 flex items-center justify-center">
+                            <i x-show="!darkMode"
+                               x-transition:enter="transition-opacity ease-in duration-200"
+                               x-transition:enter-start="opacity-0"
+                               x-transition:enter-end="opacity-100"
+                               x-transition:leave="transition-opacity ease-out duration-200"
+                               x-transition:leave-start="opacity-100"
+                               x-transition:leave-end="opacity-0"
+                               class="fas fa-moon text-lg absolute"></i>
+                            <i x-show="darkMode"
+                               x-transition:enter="transition-opacity ease-in duration-200"
+                               x-transition:enter-start="opacity-0"
+                               x-transition:enter-end="opacity-100"
+                               x-transition:leave="transition-opacity ease-out duration-200"
+                               x-transition:leave-start="opacity-100"
+                               x-transition:leave-end="opacity-0"
+                               class="fas fa-sun text-lg text-yellow-300 absolute"></i>
+                        </div>
                     </button>
 
                     <a href="{{ route('cart.index') }}"
@@ -156,23 +177,33 @@
                     @endauth
                 </div>
             </div>
+
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="lg:hidden hidden bg-pink-700 dark:bg-pink-900 mt-4 rounded-lg">
+                <div class="px-4 py-2 space-y-2">
+                    <a href="{{ route('home') }}" class="block py-2 hover:text-pink-200">Trang chủ</a>
+                    <a href="{{ route('products.index') }}" class="block py-2 hover:text-pink-200">Tất cả hoa</a>
+                    @foreach(App\Models\Category::where('is_active', true)->take(4)->get() as $category)
+                        <a href="{{ route('products.category', $category) }}" class="block py-2 hover:text-pink-200">{{ $category->name }}</a>
+                    @endforeach
+
+                    <!-- Mobile search -->
+                    <form action="/products" method="GET" class="mt-4 mb-2">
+                        <div class="flex">
+                            <input type="text" name="search" placeholder="Tìm kiếm hoa..."
+                                class="flex-1 px-3 py-2 text-black dark:text-white dark:bg-gray-700 dark:border-gray-600 rounded-l-md focus:outline-none">
+                            <button type="submit"
+                                class="bg-pink-800 dark:bg-pink-900 px-3 py-2 rounded-r-md hover:bg-pink-900 dark:hover:bg-pink-800 transition-colors duration-300">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="min-h-screen">
-        @if(session('success'))
-            <div
-                class="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-200 px-4 py-3 rounded mx-auto my-4 max-w-7xl">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div
-                class="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded mx-auto my-4 max-w-7xl">
-                {{ session('error') }}
-            </div>
-        @endif
 
         @yield('content')
     </main>
@@ -289,6 +320,21 @@
                 }, 300);
             }, 5000);
         }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Show flash messages as toasts
+        @if(session('success'))
+            showToast('{{ session('success') }}', 'success');
+        @endif
+
+        @if(session('error'))
+            showToast('{{ session('error') }}', 'error');
+        @endif
     </script>
 
     @yield('scripts')

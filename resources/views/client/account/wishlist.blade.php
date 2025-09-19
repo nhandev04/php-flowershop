@@ -83,7 +83,7 @@
                                                 <span
                                                     class="text-lg font-bold text-pink-600">{{ number_format($item->product->price, 0) }}₫</span>
                                                 <div>
-                                                    @if($item->product->stock_status === 'in_stock')
+                                                    @if($item->product->stock > 0)
                                                         <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Còn
                                                             hàng</span>
                                                     @else
@@ -97,8 +97,8 @@
                                                 <input type="hidden" name="product_id" value="{{ $item->product->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 <button type="submit"
-                                                    class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md transition duration-300 {{ $item->product->stock_status !== 'in_stock' ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                    {{ $item->product->stock_status !== 'in_stock' ? 'disabled' : '' }}>
+                                                    class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md transition duration-300 {{ $item->product->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                    {{ $item->product->stock <= 0 ? 'disabled' : '' }}>
                                                     Thêm vào giỏ hàng
                                                 </button>
                                             </form>

@@ -22,8 +22,8 @@ class OrderController extends Controller
                 'user_id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => '',
-                'address' => '',
+                'phone' => 'N/A',
+                'address' => 'N/A',
             ]);
 
             if ($order->customer_id !== $customer->id) {

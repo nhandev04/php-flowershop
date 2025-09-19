@@ -34,9 +34,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Generate a unique username based on email
+        $username = $this->generateUniqueUsername($request->email);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'username' => $username,
             'password' => Hash::make($request->password),
             'role' => 'customer', // Default role for new users
         ]);
@@ -46,8 +50,8 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'phone' => '', // Can be updated later by the user
-            'address' => '', // Can be updated later by the user
+            'phone' => 'N/A', // Default value, can be updated later by the user
+            'address' => 'N/A', // Default value, can be updated later by the user
         ]);
 
         event(new Registered($user));
@@ -55,5 +59,33 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect()->route('home');
+    }
+
+    /**
+     * Generate a unique username based on email
+     */
+    private function generateUniqueUsername($email)
+    {
+        // Get the part before @ from email
+        $baseUsername = explode('@', $email)[0];
+
+        // Remove any special characters and convert to lowercase
+        $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($baseUsername));
+
+        // Ensure username is not empty
+        if (empty($baseUsername)) {
+            $baseUsername = 'user';
+        }
+
+        $username = $baseUsername;
+        $counter = 1;
+
+        // Check if username exists and append number if needed
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        return $username;
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -75,11 +76,24 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Generate a unique username based on email
+        $username = $this->generateUniqueUsername($validated['email']);
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $username,
             'password' => Hash::make($validated['password']),
             'role' => 'user', // Đảm bảo user mới tạo từ client sẽ có role 'user'
+        ]);
+
+        // Create a corresponding customer entry
+        Customer::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => 'N/A', // Default value, can be updated later by the user
+            'address' => 'N/A', // Default value, can be updated later by the user
         ]);
 
         // Log the user in
@@ -102,5 +116,33 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+
+    /**
+     * Generate a unique username based on email
+     */
+    private function generateUniqueUsername($email)
+    {
+        // Get the part before @ from email
+        $baseUsername = explode('@', $email)[0];
+
+        // Remove any special characters and convert to lowercase
+        $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($baseUsername));
+
+        // Ensure username is not empty
+        if (empty($baseUsername)) {
+            $baseUsername = 'user';
+        }
+
+        $username = $baseUsername;
+        $counter = 1;
+
+        // Check if username exists and append number if needed
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        return $username;
     }
 }

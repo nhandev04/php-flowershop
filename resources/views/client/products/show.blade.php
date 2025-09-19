@@ -55,9 +55,9 @@
                     </div>
 
                     <div class="mb-6">
-                        @if($product->stock_status === 'in_stock')
+                        @if($product->stock > 0)
                             <span class="inline-block bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 text-sm font-semibold px-3 py-1 rounded-full">
-                                <i class="fas fa-check-circle mr-1"></i> Còn hàng
+                                <i class="fas fa-check-circle mr-1"></i> Còn hàng ({{ $product->stock }})
                             </span>
                         @else
                             <span class="inline-block bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 text-sm font-semibold px-3 py-1 rounded-full">
@@ -96,7 +96,7 @@
                     </div>
 
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                        @if($product->stock_status === 'in_stock')
+                        @if($product->stock > 0)
                             <form action="{{ route('cart.add') }}" method="POST" class="flex flex-col md:flex-row items-center">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -107,7 +107,7 @@
                                         class="quantity-btn minus-btn px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" name="quantity" min="1" value="1"
+                                    <input type="number" name="quantity" min="1" max="{{ $product->stock }}" value="1"
                                         class="w-16 text-center border-0 focus:ring-0 focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white" id="quantity-input">
                                     <button type="button"
                                         class="quantity-btn plus-btn px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300">
@@ -273,6 +273,8 @@
             const quantityInput = document.getElementById('quantity-input');
 
             if (minusBtn && plusBtn && quantityInput) {
+                const maxStock = parseInt(quantityInput.getAttribute('max'));
+
                 minusBtn.addEventListener('click', function () {
                     const currentValue = parseInt(quantityInput.value);
                     if (currentValue > 1) {
@@ -282,12 +284,16 @@
 
                 plusBtn.addEventListener('click', function () {
                     const currentValue = parseInt(quantityInput.value);
-                    quantityInput.value = currentValue + 1;
+                    if (currentValue < maxStock) {
+                        quantityInput.value = currentValue + 1;
+                    }
                 });
 
                 quantityInput.addEventListener('change', function () {
                     if (this.value < 1) {
                         this.value = 1;
+                    } else if (this.value > maxStock) {
+                        this.value = maxStock;
                     }
                 });
             }
