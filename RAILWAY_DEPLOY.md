@@ -41,11 +41,19 @@ Dự án đã được cấu hình sẵn các file cần thiết:
    - Thêm biến Laravel:
      - `APP_ENV=production`
      - `APP_DEBUG=false`
-     - `APP_KEY=` (để trống, sẽ generate sau)
+     - `APP_KEY=` (để trống, sẽ tự động generate)
      - `APP_URL=` (Railway sẽ tự động cung cấp)
+     - `SEED_DATABASE=true` (nếu muốn tự động seed data)
 
 6. **Deploy ứng dụng**:
    - Railway sẽ tự động build và deploy khi có biến môi trường
+   - Script sẽ tự động:
+     - Chờ database sẵn sàng
+     - Chạy migrations
+     - Generate APP_KEY (nếu chưa có)
+     - Clear cache
+     - Tạo storage link
+     - Seed database (nếu SEED_DATABASE=true)
    - Đợi deployment hoàn thành (kiểm tra tab "Deployments")
 
 ## Bước 3: Sau khi deploy thành công
@@ -55,28 +63,16 @@ Dự án đã được cấu hình sẵn các file cần thiết:
    - Copy URL public (dạng: https://your-app.railway.app)
    - Mở URL để kiểm tra app
 
-2. **Generate APP_KEY**:
-   - Vào tab "Console" (hoặc "Shell") của PHP app service
-   - Chạy lệnh:
-   ```bash
-   php artisan key:generate --force
-   ```
+2. **Kiểm tra logs** (nếu cần):
+   - Vào tab "Logs" để xem quá trình migration
+   - Script đã tự động chạy:
+     - `php artisan migrate --force`
+     - `php artisan key:generate --force`
+     - `php artisan storage:link`
+     - `php artisan db:seed --force` (nếu SEED_DATABASE=true)
 
-3. **Run migrations**:
-   ```bash
-   php artisan migrate --force
-   ```
-
-4. **Seed database** (nếu cần):
-   ```bash
-   php artisan db:seed --force
-   ```
-
-5. **Storage permissions** (nếu có lỗi):
-   ```bash
-   chmod -R 775 storage
-   chmod -R 775 bootstrap/cache
-   ```
+3. **Xử lý thủ công** (chỉ khi cần):
+   - Nếu cần chạy command bổ sung, vào tab "Console"
 
 ## Lưu ý
 
@@ -85,6 +81,13 @@ Dự án đã được cấu hình sẵn các file cần thiết:
 - File storage: sử dụng local disk (có thể cần cấu hình S3 cho production)
 
 ## Troubleshooting
+
+**Composer install failed - PHP version mismatch:**
+```
+Root composer.json requires php ^8.2 but your php version (8.1.33) does not satisfy that requirement.
+```
+- **Giải pháp**: Dockerfile đã được cập nhật để sử dụng PHP 8.2
+- Laravel 12 yêu cầu PHP 8.2+, đã fix trong Dockerfile
 
 **App không chạy được:**
 - Kiểm tra logs trong Railway dashboard → tab "Logs"
