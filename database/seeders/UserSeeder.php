@@ -14,25 +14,33 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'username' => 'admin',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        // Create admin user (avoid duplicates)
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
 
-        // Create normal user
-        User::create([
-            'name' => 'Normal User',
-            'email' => 'user@example.com',
-            'username' => 'user',
-            'password' => Hash::make('password'),
-            'role' => 'user',
-        ]);
+        // Create normal user (avoid duplicates)
+        User::firstOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'Normal User',
+                'username' => 'user',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+            ]
+        );
 
-        // Create additional users
-        User::factory()->count(8)->create();
+        // Create additional users only if we don't have enough
+        $existingUsersCount = User::count();
+        if ($existingUsersCount < 10) {
+            $usersToCreate = 10 - $existingUsersCount;
+            User::factory()->count($usersToCreate)->create();
+        }
     }
 }

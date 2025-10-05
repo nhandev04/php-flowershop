@@ -13,6 +13,11 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-        Order::factory()->count(10)->create();
+        // Only create orders if we don't have enough
+        $existingCount = Order::count();
+        if ($existingCount < 10) {
+            $toCreate = 10 - $existingCount;
+            Order::factory()->count($toCreate)->create();
+        }
     }
 }

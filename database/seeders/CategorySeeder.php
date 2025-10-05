@@ -13,6 +13,11 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::factory()->count(12)->create();
+        // Only create categories if we don't have enough
+        $existingCount = Category::count();
+        if ($existingCount < 12) {
+            $toCreate = 12 - $existingCount;
+            Category::factory()->count($toCreate)->create();
+        }
     }
 }

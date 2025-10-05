@@ -15,8 +15,10 @@ class OrderItemSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all orders and create 1-5 order items for each order
-        Order::all()->each(function ($order) {
+        // Only create order items for orders that don't have them yet
+        $ordersWithoutItems = Order::whereDoesntHave('orderItems')->get();
+
+        $ordersWithoutItems->each(function ($order) {
             $itemCount = rand(1, 5);
             $totalAmount = 0;
 

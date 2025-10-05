@@ -13,6 +13,11 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        Brand::factory()->count(12)->create();
+        // Only create brands if we don't have enough
+        $existingCount = Brand::count();
+        if ($existingCount < 12) {
+            $toCreate = 12 - $existingCount;
+            Brand::factory()->count($toCreate)->create();
+        }
     }
 }

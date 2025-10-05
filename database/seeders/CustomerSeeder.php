@@ -13,6 +13,11 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::factory()->count(15)->create();
+        // Only create customers if we don't have enough
+        $existingCount = Customer::count();
+        if ($existingCount < 15) {
+            $toCreate = 15 - $existingCount;
+            Customer::factory()->count($toCreate)->create();
+        }
     }
 }

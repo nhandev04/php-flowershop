@@ -35,10 +35,16 @@ class SettingsServiceProvider extends ServiceProvider
             if (\Schema::hasTable('settings')) {
                 $this->loadSettings();
                 $this->shareSettingsWithViews();
+            } else {
+                // Provide default settings if table doesn't exist
+                $this->shareDefaultSettings();
             }
         } catch (\Exception $e) {
             // Log the error but don't crash the application
             \Log::error('Error loading settings: ' . $e->getMessage());
+
+            // Provide default settings as fallback
+            $this->shareDefaultSettings();
         }
     }
 
@@ -101,6 +107,30 @@ class SettingsServiceProvider extends ServiceProvider
                 'social_media' => SettingsHelper::socialMedia(),
                 'maintenance_mode' => SettingsHelper::isMaintenanceMode(),
                 'allow_registration' => SettingsHelper::isRegistrationAllowed(),
+            ];
+
+            $view->with('settings', $settings);
+        });
+    }
+
+    /**
+     * Share default settings with all views when database is not available
+     */
+    private function shareDefaultSettings(): void
+    {
+        View::composer('*', function ($view) {
+            $settings = [
+                'site_name' => 'Flower Shop',
+                'site_description' => 'Cửa hàng hoa tươi đẹp nhất',
+                'dark_mode_default' => false,
+                'primary_color' => '#10b981',
+                'contact_email' => 'info@flowershop.com',
+                'contact_phone' => '0123456789',
+                'address' => 'Hà Nội, Việt Nam',
+                'currency' => 'VND',
+                'social_media' => [],
+                'maintenance_mode' => false,
+                'allow_registration' => true,
             ];
 
             $view->with('settings', $settings);

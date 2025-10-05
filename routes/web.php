@@ -23,6 +23,28 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
+// Health check endpoint for Railway
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'OK',
+        'timestamp' => date('Y-m-d H:i:s'),
+        'service' => 'Laravel Flower Shop',
+        'php_version' => PHP_VERSION
+    ], 200);
+});
+
+// Test route without middleware
+Route::get('/test-home', function () {
+    return response()->json([
+        'status' => 'Laravel Test',
+        'message' => 'Framework working without middleware',
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+});
+
+// Test HomeController without middleware
+Route::get('/test-controller', [HomeController::class, 'index']);
+
 // Client Routes
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('client.only');
 

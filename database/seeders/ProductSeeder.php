@@ -13,6 +13,11 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        Product::factory()->count(20)->create();
+        // Only create products if we don't have enough
+        $existingCount = Product::count();
+        if ($existingCount < 20) {
+            $toCreate = 20 - $existingCount;
+            Product::factory()->count($toCreate)->create();
+        }
     }
 }

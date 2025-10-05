@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust proxies for Railway/production
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'client.auth' => \App\Http\Middleware\ClientAuth::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
