@@ -18,31 +18,33 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $flowerProducts = [
-            'Red Rose Bouquet',
-            'Sunflower Surprise',
-            'Tulip Symphony',
-            'Orchid Elegance',
-            'Lily Majesty',
-            'Daisy Delight',
-            'Carnation Charm',
-            'Chrysanthemum Magic',
-            'Mixed Spring Flowers',
-            'Wedding White Collection',
-            'Birthday Bash Bouquet',
-            'Valentine\'s Special',
-            'Mother\'s Day Arrangement',
-            'Anniversary Bouquet',
-            'Sympathy Arrangement',
-            'Get Well Soon Flowers',
-            'New Baby Celebration',
-            'Congratulations Bouquet',
-            'Thank You Blooms',
-            'Graduation Glory'
+        $flowerTypes = [
+            'Rose', 'Sunflower', 'Tulip', 'Orchid', 'Lily', 'Daisy',
+            'Carnation', 'Chrysanthemum', 'Peony', 'Hydrangea',
+            'Gerbera', 'Iris', 'Lavender', 'Marigold', 'Jasmine'
         ];
 
+        $arrangements = [
+            'Bouquet', 'Arrangement', 'Collection', 'Bundle', 'Symphony',
+            'Elegance', 'Delight', 'Charm', 'Magic', 'Surprise'
+        ];
+
+        $occasions = [
+            'Wedding', 'Birthday', 'Valentine', 'Anniversary', 'Sympathy',
+            'Get Well', 'New Baby', 'Congratulations', 'Thank You', 'Graduation',
+            'Mother\'s Day', 'Spring', 'Summer', 'Autumn', 'Winter'
+        ];
+
+        // Generate random flower product name
+        $namePattern = fake()->randomElement([
+            fake()->randomElement($flowerTypes) . ' ' . fake()->randomElement($arrangements),
+            fake()->randomElement($occasions) . ' ' . fake()->randomElement($flowerTypes),
+            fake()->randomElement($flowerTypes) . ' ' . fake()->randomElement($occasions) . ' ' . fake()->randomElement($arrangements),
+            'Mixed ' . fake()->randomElement($flowerTypes) . ' ' . fake()->randomElement($arrangements),
+        ]);
+
         return [
-            'name' => fake()->unique()->randomElement($flowerProducts),
+            'name' => $namePattern,
             'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
             'brand_id' => Brand::inRandomOrder()->first()->id ?? Brand::factory(),
             'price' => fake()->randomFloat(2, 20, 200),

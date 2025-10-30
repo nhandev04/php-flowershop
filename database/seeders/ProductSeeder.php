@@ -15,8 +15,8 @@ class ProductSeeder extends Seeder
     {
         // Only create products if we don't have enough
         $existingCount = Product::count();
-        if ($existingCount < 20) {
-            $toCreate = 20 - $existingCount;
+        if ($existingCount < 1000) {
+            $toCreate = 1000 - $existingCount;
             Product::factory()->count($toCreate)->create();
         }
     }

@@ -12,7 +12,8 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nFIX: HTTPS/HTTP mixed content - Force HTTPS và trust proxies\n\nFixes cho Railway deployment:\n1. ✅ Force HTTPS scheme trong AppServiceProvider cho production\n2. ✅ Tạo TrustProxies middleware để trust Railway proxies\n3. ✅ Register trust proxies trong bootstrap/app.php\n4. ✅ Support X-Forwarded-* headers từ Railway\n\nFixes:\n- Mixed content error (HTTP assets on HTTPS page)\n- Assets không load được trên Railway\n- Railway proxy detection\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(find:*)",
       "Bash(git commit:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
