@@ -219,6 +219,7 @@
                                         <form action="{{ route('cart.add') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $relatedProduct->id }}">
+                                            <input type="hidden" name="quantity" value="1">
                                             <button type="submit"
                                                 class="bg-pink-600 hover:bg-pink-700 text-white rounded-full w-10 h-10 flex items-center justify-center transition duration-300">
                                                 <i class="fas fa-shopping-basket"></i>
