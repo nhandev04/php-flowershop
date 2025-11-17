@@ -222,6 +222,7 @@
                         <li><a href="{{ route('home') }}" class="text-gray-400 hover:text-white">Trang chủ</a></li>
                         <li><a href="{{ route('products.index') }}" class="text-gray-400 hover:text-white">Cửa hàng</a>
                         </li>
+                        <li><a href="{{ route('blogs.index') }}" class="text-gray-400 hover:text-white">Tin tức</a></li>
                     </ul>
                 </div>
 

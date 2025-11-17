@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\OrderItemController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CartController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\WishlistController;
 use App\Http\Controllers\Client\AuthController as ClientAuthController;
+use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\AuthController;
@@ -54,6 +56,10 @@ Route::get('/products/category/{category}', [ClientProductController::class, 'ca
 Route::get('/products/brand/{brand}', [ClientProductController::class, 'brand'])->name('products.brand')->middleware('client.only');
 Route::get('/products/{product}', [ClientProductController::class, 'show'])->name('products.show')->middleware('client.only');
 Route::get('/search', [ClientProductController::class, 'search'])->name('products.search')->middleware('client.only');
+
+// Blog Routes
+Route::get('/blogs', [ClientBlogController::class, 'index'])->name('blogs.index')->middleware('client.only');
+Route::get('/blogs/{blog}', [ClientBlogController::class, 'show'])->name('blogs.show')->middleware('client.only');
 
 // Wishlist Public Route
 Route::get('/wishlist', [WishlistController::class, 'show'])->name('wishlist.show')->middleware('client.only');
@@ -205,6 +211,18 @@ Route::prefix('ad')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.banners.update',
         'destroy' => 'admin.banners.destroy',
     ]);
+
+    // Blogs
+    Route::resource('blogs', AdminBlogController::class)->names([
+        'index' => 'admin.blogs.index',
+        'create' => 'admin.blogs.create',
+        'store' => 'admin.blogs.store',
+        'show' => 'admin.blogs.show',
+        'edit' => 'admin.blogs.edit',
+        'update' => 'admin.blogs.update',
+        'destroy' => 'admin.blogs.destroy',
+    ]);
+    Route::post('blogs/{blog}/toggle-active', [AdminBlogController::class, 'toggleActive'])->name('admin.blogs.toggle-active');
 
     // Profile Routes
     Route::get('profile', [ProfileController::class, 'show'])->name('admin.profile');
